@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Hub - Admin Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f7f6;
+            
+            --gray: #999;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            
+            /* --- BACKGROUND IMAGE CONFIG --- */
+            background-image: url('image.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 80%; /* Watermark size */
+            background-attachment: fixed;
+        }
+
+        /* The Tint Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(244, 247, 246, 0.92); 
+            z-index: -1;
+        }
+
+        .signup-container {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .signup-header h2 {
+            margin: 10px 0;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* Input Styling */
+        .input-control {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-control i.main-icon {
+            position: absolute;
+            left: 12px;
+            color: var(--gray);
+        }
+
+        .input-control input {
+            width: 100%;
+            padding: 12px 40px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .input-control input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        /* Auto-username readonly style */
+        input[readonly] {
+            background-color: #f1f5f9 !important;
+            border-style: dashed !important;
+            cursor: not-allowed;
+        }
+
+        /* Password Toggle Styling */
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            color: var(--gray);
+            transition: 0.2s;
+            padding: 5px;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent-color);
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .signup-btn:hover { background-color: #2980b9; }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .footer-text a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="signup-container">
+    <div class="signup-header">
+        <i class="fas fa-user-shield fa-3x" style="color: var(--accent-color);"></i>
+        <h2>Admin Sign Up</h2>
+        <p>Your username will start with <strong>admin_</strong></p>
+    </div>
+
+    <form id="signupForm">
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <div class="input-control">
+                <i class="fas fa-user main-icon"></i>
+                <input type="text" id="fullName" placeholder="Enter full name" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="username">System ID</label>
+            <div class="input-control">
+                <i class="fas fa-id-badge main-icon"></i>
+                <input type="text" id="username" placeholder="admin_username" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-control">
+                <i class="fas fa-envelope main-icon"></i>
+                <input type="email" id="email" placeholder="admin@skillhub.com" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-control">
+                <i class="fas fa-lock main-icon"></i>
+                <input type="password" id="password" placeholder="••••••••" required>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-control">
+                <i class="fas fa-check-double main-icon"></i>
+                <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPassword', this)"></i>
+            </div>
+            <div id="passwordError" class="error-msg">Passwords do not match!</div>
+        </div>
+
+        <button type="submit" class="signup-btn">Create Admin Account</button>
+    </form>
+
+    <div class="footer-text">
+        Already have an account? <a href="login.html">Login here</a>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('signupForm');
+    const fullName = document.getElementById('fullName');
+    const usernameField = document.getElementById('username');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const errorMsg = document.getElementById('passwordError');
+
+    // --- PASSWORD TOGGLE LOGIC ---
+    function togglePassword(inputId, icon) {
+        const field = document.getElementById(inputId);
+        if (field.type === "password") {
+            field.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            field.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    // --- AUTO-USERNAME LOGIC ---
+    fullName.addEventListener('input', () => {
+        const val = fullName.value.trim().toLowerCase();
+        usernameField.value = val ? `admin_${val.replace(/\s+/g, '_')}` : "";
+    });
+
+    // --- FORM SUBMISSION ---
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        if (password.value !== confirmPassword.value) {
+            errorMsg.style.display = 'block';
+            confirmPassword.style.borderColor = '#e74c3c';
+            return;
+        }
+
+        const newUser = {
+            name: fullName.value,
+            username: usernameField.value,
+            email: document.getElementById('email').value,
+            password: password.value,
+            role: 'admin'
+        };
+
+        const users = JSON.parse(localStorage.getItem('skillhub_users')) || [];
+
+        if(users.some(u => u.username === newUser.username)) {
+            alert('This username is already taken!');
+            return;
+        }
+
+        users.push(newUser);
+        localStorage.setItem('skillhub_users', JSON.stringify(users));
+
+        alert('Registration Successful! Redirecting to login...');
+        window.location.href = 'login.html';
+    });
+
+    confirmPassword.addEventListener('input', () => {
+        errorMsg.style.display = 'none';
+        confirmPassword.style.borderColor = '#ddd';
+    });
+</script>
+
+</body>
+</html>

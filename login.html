@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Skill Hub | Login</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --bg: #f4f7f6;
+            --danger-bg: #fee2e2;
+            --danger-text: #b91c1c;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+
+            /* Watermark */
+            background-image: url('image.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 80%;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(244, 247, 246, 0.92);
+            z-index: -1;
+        }
+
+        /* ===== LOGIN CARD ===== */
+        .login-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .login-card h2 {
+            text-align: center;
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        /* ===== ALERT ===== */
+        .alert {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .alert.error {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        /* ===== FORM ===== */
+        label {
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-top: 12px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* ===== BUTTON ===== */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-card">
+    <h2>Skill Hub Login</h2>
+
+    <div id="alert" class="alert error"></div>
+
+    <form id="loginForm">
+        <label>Username / ID</label>
+        <input type="text" id="userInput" placeholder="admin_xxx, trn_xxx, stu_xxx" required>
+
+        <label>Password</label>
+        <input type="password" id="passInput" placeholder="••••••••" required>
+
+        <label>Login As</label>
+        <select id="roleInput" required>
+            <option value="admin">Administrator</option>
+            <option value="trainer">Trainer</option>
+            <option value="student">Student</option>
+        </select>
+
+        <button type="submit" class="btn">Sign In</button>
+        <div class="footer-text">
+        Can need an account? <a href="admin_singup.html">Signup here</a>
+    </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const userVal = userInput.value.trim();
+    const passVal = passInput.value;
+    const roleVal = roleInput.value;
+    const alertBox = document.getElementById('alert');
+
+    const users = JSON.parse(localStorage.getItem('skillhub_users')) || [];
+
+    const matchedUser = users.find(u =>
+        (u.username === userVal || u.email === userVal || u.student_id === userVal) &&
+        u.password === passVal &&
+        u.role === roleVal
+    );
+
+    if (matchedUser) {
+        localStorage.setItem('active_session', JSON.stringify(matchedUser));
+        window.location.href = roleVal + "_dashboard.html";
+    } else {
+        alertBox.style.display = "block";
+        alertBox.textContent = "Invalid credentials for " + roleVal;
+    }
+});
+</script>
+
+</body>
+</html>

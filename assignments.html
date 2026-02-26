@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assignments | Skill Hub LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #6366f1;
+            --dark-sidebar: #1e293b;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+
+        /* Navigation */
+        .top-nav {
+            width: 100%; background: var(--primary); color: white; padding: 12px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+        .logo-icon { width: 40px; height: 40px; border-radius: 50%; background: white; padding: 5px; }
+        .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .top-nav-links { display: flex; align-items: center; gap: 20px; }
+        .top-nav-links a { color: white; font-size: 0.9rem; text-decoration: none; transition: 0.2s; }
+
+        /* Layout */
+        .app-body { display: flex; min-height: calc(100vh - 64px); }
+        .sidebar { width: 240px; background: var(--dark-sidebar); padding-top: 20px; flex-shrink: 0; }
+        .nav-item { 
+            display: flex; align-items: center; gap: 12px; padding: 14px 20px; 
+            color: #cbd5e1; text-decoration: none; transition: 0.2s; 
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { border-left: 4px solid var(--accent); }
+
+        .content-area { flex: 1; padding: 30px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+        /* Cards & Tables */
+        .card { background: var(--white); padding: 25px; border-radius: var(--radius); box-shadow: var(--card-shadow); margin-bottom: 25px; }
+        .dashboard-table { width: 100%; border-collapse: collapse; }
+        .dashboard-table th { text-align: left; padding: 15px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid var(--bg); }
+        .dashboard-table td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .course-tag { 
+            background: #e0e7ff; color: #4338ca; padding: 4px 10px; 
+            border-radius: 20px; font-size: 0.75rem; font-weight: 600; 
+        }
+
+        /* Forms */
+        input, select, textarea { 
+            width: 100%; padding: 12px; margin-bottom: 15px; 
+            border: 1px solid var(--border); border-radius: 8px; outline: none; 
+        }
+        input:focus, select:focus { border-color: var(--primary); }
+        .btn-add { 
+            background: var(--primary); color: white; border: none; 
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; 
+        }
+        .btn-edit { background: #eef2ff; color: var(--primary); border: none; padding: 8px; border-radius: 6px; cursor: pointer; }
+        .btn-delete { background: #fff1f2; color: var(--danger); border: none; padding: 8px; border-radius: 6px; cursor: pointer; margin-left: 5px; }
+        
+        .alert { padding: 15px; border-radius: 8px; background: #dcfce7; color: #166534; margin-bottom: 20px; display: none; }
+        .hidden { display: none; }
+
+        @media (max-width: 768px) { .sidebar { display: none; } }
+    </style>
+</head>
+<body>
+
+<header class="top-nav">
+    <a href="admin_dashboard.html" class="logo">
+        <div class="logo-icon"><img src="image.png" alt="Logo"></div>
+        <span class="logo-text">Skill Hub</span>
+    </a>
+    <nav class="top-nav-links">
+        <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="messages.html"><i class="fas fa-comments"></i> Chat</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+</header>
+
+<div class="app-body">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="courses.html" class="nav-item"><i class="fas fa-book"></i> Courses</a>
+            <a href="assignments.html" class="nav-item active"><i class="fas fa-tasks"></i> Assignments</a>
+            <a href="students.html" class="nav-item"><i class="fas fa-users"></i> Students</a>
+        </nav>
+    </aside>
+
+    <main class="content-area">
+        <div class="page-header">
+            <h1>Assignment Management</h1>
+            <button class="btn-add" onclick="toggleForm()"><i class="fas fa-plus"></i> Create Assignment</button>
+        </div>
+
+        <div id="successAlert" class="alert">Action completed successfully!</div>
+
+        <div id="assignmentFormCard" class="card hidden">
+            <h3 id="formTitle">Create New Assignment</h3>
+            <form id="assignmentForm">
+                <input type="hidden" id="editId">
+                <label>Assignment Title</label>
+                <input type="text" id="title" placeholder="e.g. JavaScript DOM Challenge" required>
+                
+                <label>Target Course Group</label>
+                <select id="courseSelect" required>
+                    <option value="">-- Select a Course --</option>
+                </select>
+
+                <label>Instructions / Description</label>
+                <textarea id="description" rows="3" placeholder="Describe the tasks..." required></textarea>
+
+                <label>Resource Link (URL)</label>
+                <input type="url" id="link" placeholder="https://github.com/your-repo" required>
+
+                <label>Due Date</label>
+                <input type="date" id="due_date" required>
+
+                <div style="margin-top: 10px;">
+                    <button type="submit" class="btn-add" id="submitBtn">Save Assignment</button>
+                    <button type="button" class="btn-delete" style="background:#94a3b8; color:white;" onclick="toggleForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <input type="text" id="searchInput" placeholder="Search by title or course..." onkeyup="filterTable()" style="width: 300px; margin-bottom: 0;">
+        </div>
+
+        <div class="card">
+            <table class="dashboard-table" id="assignmentTable">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Course</th>
+                        <th>Due Date</th>
+                        <th>Resource</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="assignmentBody"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script>
+    const ASSIGN_KEY = 'skillhub_assignments';
+    const COURSE_KEY = 'skillhub_courses';
+    const NOTIF_KEY = 'lms_notifications'; // Key shared with Students & Trainers
+
+    document.addEventListener('DOMContentLoaded', () => {
+        populateCourses();
+        renderTable();
+    });
+
+    function populateCourses() {
+        const select = document.getElementById('courseSelect');
+        const courses = JSON.parse(localStorage.getItem(COURSE_KEY)) || [];
+        
+        courses.forEach(course => {
+            const courseName = typeof course === 'object' ? (course.title || course.name) : course;
+            if (courseName) {
+                const opt = document.createElement('option');
+                opt.value = courseName;
+                opt.textContent = courseName;
+                select.appendChild(opt);
+            }
+        });
+    }
+
+    function renderTable() {
+        const assignments = JSON.parse(localStorage.getItem(ASSIGN_KEY)) || [];
+        const tbody = document.getElementById('assignmentBody');
+        
+        if (assignments.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">No assignments found.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = assignments.map(a => `
+            <tr>
+                <td><strong>${a.title}</strong><br><small style="color:#64748b">${a.description.substring(0, 30)}...</small></td>
+                <td><span class="course-tag">${a.course}</span></td>
+                <td>${a.due_date}</td>
+                <td><a href="${a.link}" target="_blank" style="color:var(--primary)">View Link</a></td>
+                <td>
+                    <button class="btn-edit" onclick="editMode(${a.id})"><i class="fas fa-edit"></i></button>
+                    <button class="btn-delete" onclick="deleteAssign(${a.id})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // --- NOTIFICATION FUNCTION ---
+    function sendNotification(course, title, actionType) {
+        const notifs = JSON.parse(localStorage.getItem(NOTIF_KEY)) || [];
+        notifs.push({
+            id: Date.now(),
+            targetCourse: course, 
+            title: actionType,
+            message: `Assignment "${title}" has been ${actionType.toLowerCase()} for your group.`,
+            date: new Date().toLocaleString(),
+            read: false,
+            forRoles: ['student', 'trainer']
+        });
+        localStorage.setItem(NOTIF_KEY, JSON.stringify(notifs));
+    }
+
+    document.getElementById('assignmentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const id = document.getElementById('editId').value;
+        const titleVal = document.getElementById('title').value;
+        const courseVal = document.getElementById('courseSelect').value;
+
+        const newAssign = {
+            id: id ? parseInt(id) : Date.now(),
+            title: titleVal,
+            course: courseVal,
+            description: document.getElementById('description').value,
+            link: document.getElementById('link').value,
+            due_date: document.getElementById('due_date').value
+        };
+
+        let assignments = JSON.parse(localStorage.getItem(ASSIGN_KEY)) || [];
+
+        if (id) {
+            assignments = assignments.map(a => a.id == id ? newAssign : a);
+            sendNotification(courseVal, titleVal, "Updated Assignment");
+        } else {
+            assignments.push(newAssign);
+            sendNotification(courseVal, titleVal, "New Assignment");
+        }
+
+        localStorage.setItem(ASSIGN_KEY, JSON.stringify(assignments));
+        this.reset();
+        document.getElementById('editId').value = '';
+        toggleForm();
+        renderTable();
+        showFeedback("Assignment saved and notifications sent!");
+    });
+
+    function editMode(id) {
+        const assignments = JSON.parse(localStorage.getItem(ASSIGN_KEY)) || [];
+        const a = assignments.find(item => item.id === id);
+        
+        document.getElementById('editId').value = a.id;
+        document.getElementById('title').value = a.title;
+        document.getElementById('courseSelect').value = a.course;
+        document.getElementById('description').value = a.description;
+        document.getElementById('link').value = a.link;
+        document.getElementById('due_date').value = a.due_date;
+        
+        document.getElementById('formTitle').innerText = "Update Assignment";
+        document.getElementById('submitBtn').innerText = "Update Changes";
+        
+        const card = document.getElementById('assignmentFormCard');
+        if (card.classList.contains('hidden')) toggleForm();
+    }
+
+    function deleteAssign(id) {
+        if (confirm("Remove this assignment? Students will no longer see it.")) {
+            const assignments = JSON.parse(localStorage.getItem(ASSIGN_KEY)) || [];
+            const filtered = assignments.filter(a => a.id !== id);
+            localStorage.setItem(ASSIGN_KEY, JSON.stringify(filtered));
+            renderTable();
+        }
+    }
+
+    function toggleForm() {
+        const card = document.getElementById('assignmentFormCard');
+        card.classList.toggle('hidden');
+        if (card.classList.contains('hidden')) {
+            document.getElementById('assignmentForm').reset();
+            document.getElementById('formTitle').innerText = "Create New Assignment";
+            document.getElementById('submitBtn').innerText = "Save Assignment";
+        }
+    }
+
+    function filterTable() {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#assignmentBody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+    }
+
+    function showFeedback(msg) {
+        const alert = document.getElementById('successAlert');
+        alert.innerText = msg;
+        alert.style.display = 'block';
+        setTimeout(() => alert.style.display = 'none', 3000);
+    }
+</script>
+
+</body>
+</html>

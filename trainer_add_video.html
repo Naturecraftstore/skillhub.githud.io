@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Video Lecture | Trainer Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+    /* Brand Colors */
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --primary-soft: #f0f2ff;
+    --bg: #f8fafc; 
+    --sidebar-bg: #ffffff;
+    --text-main: #1e293b; 
+    --text-muted: #64748b;
+    --white: #ffffff; 
+    --border: #e2e8f0; 
+    
+    /* Shadows & Radius */
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --radius-lg: 16px;
+    --radius-md: 10px;
+}
+
+* { box-sizing: border-box; transition: all 0.2s ease-in-out; }
+
+body { 
+    font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+    margin: 0; 
+    background: var(--bg); 
+    color: var(--text-main); 
+}
+
+/* --- TOP NAVIGATION (Glassmorphism) --- */
+.top-nav {
+    position: fixed; top: 0; width: 100%; height: 70px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; z-index: 1000; 
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.logo-section { display: flex; align-items: center; gap: 15px; }
+#sidebarToggle { font-size: 1.2rem; color: var(--text-muted); cursor: pointer; }
+
+.logo-icon img { height: 35px; border-radius: 8px; }
+.logo-text { font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+
+.nav-right { display: flex; align-items: center; gap: 20px; }
+.top-link { color: var(--text-muted); font-size: 1.1rem; text-decoration: none; position: relative; }
+.top-link:hover { color: var(--primary); }
+
+.logout-btn { 
+    background: #fee2e2; color: #dc2626; padding: 8px 16px; 
+    border-radius: var(--radius-md); text-decoration: none; 
+    font-weight: 600; font-size: 0.9rem;
+}
+
+/* --- APP LAYOUT --- */
+.app-container { display: flex; padding-top: 70px; min-height: 100vh; }
+
+.sidebar { 
+    width: 260px; height: calc(100vh - 70px); 
+    background: var(--sidebar-bg); 
+    position: fixed; left: 0; border-right: 1px solid var(--border); 
+    padding: 1.5rem 1rem;
+}
+
+.nav-item { 
+    display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+    text-decoration: none; color: var(--text-muted); border-radius: var(--radius-md); 
+    margin-bottom: 5px; font-weight: 500;
+}
+
+.nav-item:hover { background: var(--primary-soft); color: var(--primary); transform: translateX(5px); }
+.nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+
+/* --- CONTENT AREA --- */
+.content-area { 
+    margin-left: 260px; flex: 1; padding: 3rem 2rem; 
+    max-width: 1000px; margin-right: auto; 
+}
+
+h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+
+/* Form Cards */
+.card { 
+    background: var(--white); padding: 2.5rem; border-radius: var(--radius-lg); 
+    border: 1px solid var(--border); box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+}
+
+.form-group { margin-bottom: 1.5rem; }
+label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
+
+input, select { 
+    width: 100%; padding: 12px 15px; border: 2px solid var(--border); 
+    border-radius: var(--radius-md); font-size: 1rem; outline: none;
+}
+
+input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
+
+/* Video Preview Specifics */
+.video-preview-box { 
+    margin-top: 25px; background: #000; border-radius: var(--radius-md); 
+    aspect-ratio: 16/9; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; color: #94a3b8;
+    overflow: hidden; border: 4px solid #1e293b;
+}
+
+.btn-publish { 
+    background: var(--primary); color: white; border: none; padding: 16px; 
+    border-radius: var(--radius-md); font-weight: 700; cursor: pointer; 
+    width: 100%; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+
+.btn-publish:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+
+/* Recent Uploads List */
+.video-item { 
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 15px; border-bottom: 1px solid var(--border); transition: background 0.2s;
+}
+
+.video-item:hover { background: var(--bg); }
+
+.badge { 
+    background: var(--primary-soft); color: var(--primary); 
+    padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; 
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .sidebar { width: 80px; padding: 1.5rem 0.5rem; }
+    .sidebar span { display: none; }
+    .nav-item { justify-content: center; }
+    .content-area { margin-left: 80px; padding: 2rem 1rem; }
+}
+  </style>
+</head>
+<body>
+
+<header class="top-nav">
+    <div class="logo-section">
+      <i class="fas fa-bars" id="sidebarToggle"></i>
+      <div class="logo-icon"><a href="trainer_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+      <span class="logo-text">Skill Hub</span>
+    </div>
+    <div class="nav-right">
+      <a href="notifications.html" class="top-link" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="badge" id="notifBadge">0</span>
+      </a>
+      <a href="messages.html" class="top-link" title="Chat"><i class="fas fa-comment-dots"></i></a>
+      <a href="trainer_profile.html" class="top-link" id="navTrainerDisplay"><i class="fas fa-user-circle"></i></a>
+      <a href="index.html" class="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </header>
+
+<div class="app-container">
+    <aside class="sidebar">
+        <nav>
+           <a href="trainer_dashboard.html" class="nav-item active"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a href="trainer_grading.html" class="nav-item"><i class="fas fa-check-double"></i> <span>Grading</span></a>
+        <a href="trainer_add_assignment.html" class="nav-item"><i class="fas fa-tasks"></i> <span>Assignments</span></a>
+        <a href="trainer_add_video.html" class="nav-item"><i class="fas fa-video"></i> <span>Videos</span></a>
+        <a href="trainer_add_material.html" class="nav-item"><i class="fas fa-file-upload"></i> <span>Materials</span></a>
+        <a href="trainer_add_session.html" class="nav-item"><i class="fas fa-calendar-alt"></i> <span>Live Sessions</span></a>
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+        <a href="contact.html" class="nav-item"><i class="fas fa-question-circle"></i> <span>Help Desk</span></a>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <h1>Publish Video Lecture</h1>
+      <p style="color:#64748b; margin-bottom:2rem;">Share YouTube or Vimeo links with your students.</p>
+
+      <div class="card">
+        <div class="form-group">
+          <label>Lesson Title</label>
+          <input type="text" id="vidTitle" placeholder="e.g. Mastering Flexbox - Part 1">
+        </div>
+
+        <div class="form-group">
+          <label>Target Course</label>
+          <select id="vidCourse">
+            <option value="">-- Choose Course --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Video URL (YouTube/Vimeo)</label>
+          <input type="url" id="vidUrl" placeholder="https://www.youtube.com/watch?v=..." oninput="previewVideo()">
+        </div>
+
+        <div id="videoPreview" class="video-preview-box">
+          <i class="fas fa-play-circle fa-3x"></i>
+          <span style="margin-left:10px">Video Preview will appear here</span>
+        </div>
+
+        <button class="btn-publish" onclick="saveVideo()" style="margin-top:20px;">
+          <i class="fas fa-paper-plane"></i> Publish to Course
+        </button>
+      </div>
+
+      <div class="card" style="margin-top:2rem; padding:1rem;">
+        <h3>My Recent Uploads</h3>
+        <div id="myVideoList"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+const VIDEO_KEY = 'skillhub_videos';
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadTrainerData();
+    renderMyVideos();
+});
+
+function loadTrainerData() {
+    const session = JSON.parse(localStorage.getItem('active_session') || '{}');
+    document.getElementById('trainerDisplay').innerText = `Trainer: ${session.name}`;
+
+    // Load available courses
+    const courses = JSON.parse(localStorage.getItem('skillhub_courses')) || [];
+    const dropdown = document.getElementById('vidCourse');
+    dropdown.innerHTML += courses.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function previewVideo() {
+    const url = document.getElementById('vidUrl').value;
+    const preview = document.getElementById('videoPreview');
+    
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        let videoId = url.split('v=')[1] || url.split('/').pop();
+        preview.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+    } else {
+        preview.innerHTML = `<i class="fas fa-video fa-3x"></i><span style="margin-left:10px">Ready to Link</span>`;
+    }
+}
+
+function saveVideo() {
+    const title = document.getElementById('vidTitle').value;
+    const course = document.getElementById('vidCourse').value;
+    const url = document.getElementById('vidUrl').value;
+    const session = JSON.parse(localStorage.getItem('active_session') || '{}');
+
+    if (!title || !course || !url) return alert("Please fill all fields");
+
+    const videos = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    
+    const newVideo = {
+        id: Date.now(),
+        title: title,
+        course: course,
+        url: url,
+        uploadedBy: session.name,
+        date: new Date().toLocaleDateString()
+    };
+
+    videos.push(newVideo);
+    localStorage.setItem(VIDEO_KEY, JSON.stringify(videos));
+    
+    alert("Video successfully published!");
+    location.reload(); 
+}
+
+function renderMyVideos() {
+    const session = JSON.parse(localStorage.getItem('active_session') || '{}');
+    const allVideos = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    const myList = allVideos.filter(v => v.uploadedBy === session.name);
+    
+    const container = document.getElementById('myVideoList');
+    if (myList.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#94a3b8;">No videos uploaded yet.</p>';
+        return;
+    }
+
+    container.innerHTML = myList.map(v => `
+        <div class="video-item">
+            <div>
+                <strong>${v.title}</strong><br>
+                <span class="badge">${v.course}</span>
+            </div>
+            <button onclick="deleteVid(${v.id})" style="color:#ef4444; border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
+        </div>
+    `).join('');
+}
+
+function deleteVid(id) {
+    if(!confirm("Delete this video?")) return;
+    let allVideos = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    allVideos = allVideos.filter(v => v.id !== id);
+    localStorage.setItem(VIDEO_KEY, JSON.stringify(allVideos));
+    renderMyVideos();
+}
+</script>
+</body>
+</html>

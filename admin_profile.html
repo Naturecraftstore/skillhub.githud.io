@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile | Skill Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+       
+    /* ================= CSS UPDATED FOR BACKGROUND ================= */
+    :root {
+        --primary: #4f46e5;
+        --bg: #f4f6f9;
+        --text: #1e293b;
+        --white: #ffffff;
+        --border: rgba(226, 232, 240, 0.4);
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* SETTING YOUR LOCAL IMAGE */
+        background-image: url('image.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    /* Glassmorphism Profile Card */
+    .profile-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        padding: 40px;
+        width: 420px;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--border);
+    }
+
+    h2 {
+        margin-top: 0;
+        color: var(--primary);
+        border-bottom: 2px solid rgba(79, 70, 229, 0.2);
+        padding-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.5rem;
+    }
+
+    .info-group {
+        margin-bottom: 20px;
+    }
+
+    .info-group strong {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+
+    .info-group span, .info-group input {
+        font-size: 1.1rem;
+        display: block;
+        margin-top: 6px;
+        color: #0f172a;
+        font-weight: 500;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        box-sizing: border-box;
+        background: rgba(255, 255, 255, 0.7);
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn {
+        text-decoration: none;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        font-size: 0.95rem;
+        text-align: center;
+        flex: 1;
+        transition: 0.3s;
+    }
+
+    .btn-back { 
+        background: #e2e8f0; 
+        color: #475569; 
+    }
+    
+    .btn-back:hover {
+        background: #cbd5e1;
+    }
+
+    .btn-edit { 
+        background: var(--primary); 
+        color: white; 
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-edit:hover {
+        background: #4338ca;
+        transform: translateY(-2px);
+    }
+
+    .btn-save { 
+        background: #10b981; 
+        color: white; 
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-save:hover {
+        background: #059669;
+        transform: translateY(-2px);
+    }
+
+    .hidden { display: none; }
+
+    /* Small decorative icon styling */
+    .fa-user-shield {
+        opacity: 0.8;
+    }
+</style>
+</head>
+<body>
+
+<div class="profile-card">
+    <h2>
+        Admin Profile 
+        <i class="fas fa-user-shield"></i>
+    </h2>
+
+    <div id="view-mode">
+        <div class="info-group">
+            <strong>Name</strong>
+            <span id="display-name">---</span>
+        </div>
+        <div class="info-group">
+            <strong>Email</strong>
+            <span id="display-email">---</span>
+        </div>
+        <div class="info-group">
+            <strong>Phone</strong>
+            <span id="display-phone">---</span>
+        </div>
+        <div class="info-group">
+            <strong>Username</strong>
+            <span id="display-username">---</span>
+        </div>
+        <div class="info-group">
+            <strong>Created At</strong>
+            <span id="display-date">---</span>
+        </div>
+
+        <div class="actions">
+            <a href="admin_dashboard.html" class="btn btn-back">Back</a>
+            <button class="btn btn-edit" onclick="toggleEdit()">Edit Profile</button>
+        </div>
+    </div>
+
+    <div id="edit-mode" class="hidden">
+        <div class="info-group">
+            <strong>Full Name</strong>
+            <input type="text" id="edit-name">
+        </div>
+        <div class="info-group">
+            <strong>Email</strong>
+            <input type="email" id="edit-email">
+        </div>
+        <div class="info-group">
+            <strong>Phone</strong>
+            <input type="text" id="edit-phone">
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-back" onclick="toggleEdit()">Cancel</button>
+            <button class="btn btn-save" onclick="saveProfile()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ================= JS & LOCAL STORAGE ================= */
+
+// 1. Initial Default Data
+const defaultAdmin = {
+    full_name: "John Doe",
+    email: "admin@skillhub.com",
+    phone: "+1 234 567 890",
+    username: "admin_master",
+    created_at: "2024-01-15"
+};
+
+// 2. Load Data from Local Storage
+function loadProfile() {
+    let adminData = localStorage.getItem('adminProfile');
+    
+    // If no data exists, set the default
+    if (!adminData) {
+        localStorage.setItem('adminProfile', JSON.stringify(defaultAdmin));
+        adminData = JSON.stringify(defaultAdmin);
+    }
+    
+    const admin = JSON.parse(adminData);
+
+    // Populate View Mode
+    document.getElementById('display-name').innerText = admin.full_name;
+    document.getElementById('display-email').innerText = admin.email;
+    document.getElementById('display-phone').innerText = admin.phone;
+    document.getElementById('display-username').innerText = admin.username;
+    document.getElementById('display-date').innerText = admin.created_at;
+
+    // Populate Edit Mode
+    document.getElementById('edit-name').value = admin.full_name;
+    document.getElementById('edit-email').value = admin.email;
+    document.getElementById('edit-phone').value = admin.phone;
+}
+
+// 3. Toggle between View and Edit modes
+function toggleEdit() {
+    document.getElementById('view-mode').classList.toggle('hidden');
+    document.getElementById('edit-mode').classList.toggle('hidden');
+}
+
+// 4. Save Data to Local Storage
+function saveProfile() {
+    const adminData = JSON.parse(localStorage.getItem('adminProfile'));
+
+    // Update fields
+    adminData.full_name = document.getElementById('edit-name').value;
+    adminData.email = document.getElementById('edit-email').value;
+    adminData.phone = document.getElementById('edit-phone').value;
+
+    // Persist to Local Storage
+    localStorage.setItem('adminProfile', JSON.stringify(adminData));
+    
+    // Refresh UI
+    loadProfile();
+    toggleEdit();
+}
+
+// Initialize on page load
+window.onload = loadProfile;
+</script>
+
+</body>
+</html>

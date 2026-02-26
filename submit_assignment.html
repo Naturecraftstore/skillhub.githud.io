@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Work | Skill Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --bg: #f8fafc; --text: #1e293b; 
+      --white: #ffffff; --border: #e2e8f0; 
+    }
+
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    .top-nav {
+      position: fixed; top: 0; width: 100%; background: var(--primary);
+      padding: 0.7rem 2rem; z-index: 1000; display: flex;
+      justify-content: space-between; align-items: center; box-sizing: border-box;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: #fff; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { color: #ffffff; font-size: 1.2rem; font-weight: 600; }
+
+    .app-container { display: flex; padding-top: 80px; justify-content: center; }
+    
+    .submission-card {
+      background: white; padding: 40px; border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 550px;
+    }
+    
+    .header-group { border-bottom: 2px solid var(--bg); margin-bottom: 25px; padding-bottom: 15px; }
+    .header-group h2 { margin: 0; color: var(--primary); }
+    
+    label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: #64748b; }
+    input, textarea { 
+      width: 100%; padding: 12px; border: 1px solid var(--border); 
+      border-radius: 8px; margin-bottom: 20px; box-sizing: border-box; font-family: inherit;
+    }
+    
+    .btn-submit { 
+      background: var(--primary); color: white; border: none; 
+      padding: 14px; border-radius: 8px; cursor: pointer; 
+      font-weight: 600; width: 100%; font-size: 1rem;
+    }
+    .back-link { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <div class="logo-icon"><img src="image.png" alt="Logo"></div>
+      <span class="logo-text">Skill Hub</span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <div class="submission-card">
+      <div class="header-group">
+        <h2 id="asTitleDisplay">Submit Assignment</h2>
+        <p id="asDueDateDisplay" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></p>
+      </div>
+
+      <form id="submitForm">
+        <label>Work Link (GitHub / Drive / Portfolio)</label>
+        <input type="url" id="workLink" placeholder="https://github.com/your-username/project" required>
+
+        <label>Comments / Notes for Trainer</label>
+        <textarea id="studentNotes" rows="4" placeholder="Briefly describe your solution..."></textarea>
+
+        <button type="submit" class="btn-submit">Turn In Assignment</button>
+        <a href="student_assignments.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Assignments</a>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Get Assignment Details from URL
+      const params = new URLSearchParams(window.location.search);
+      const assignmentId = params.get('id');
+      const assignments = JSON.parse(localStorage.getItem('lms_assignments')) || [];
+      const currentAs = assignments.find(a => a.id == assignmentId);
+
+      if (currentAs) {
+        document.getElementById('asTitleDisplay').innerText = `Submit: ${currentAs.title}`;
+        document.getElementById('asDueDateDisplay').innerText = `Due Date: ${currentAs.dueDate}`;
+      }
+
+      // 2. Handle Submission
+      document.getElementById('submitForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const user = JSON.parse(localStorage.getItem('active_session'));
+        
+        const submission = {
+          submissionId: Date.now(),
+          assignmentId: assignmentId,
+          assignmentTitle: currentAs ? currentAs.title : "Unknown",
+          studentName: user.name || user.username,
+          studentEmail: user.username,
+          workLink: document.getElementById('workLink').value,
+          notes: document.getElementById('studentNotes').value,
+          submittedAt: new Date().toLocaleString(),
+          status: "Pending Grade"
+        };
+
+        // Save to global submissions key
+        const allSubmissions = JSON.parse(localStorage.getItem('lms_submissions')) || [];
+        allSubmissions.push(submission);
+        localStorage.setItem('lms_submissions', JSON.stringify(allSubmissions));
+
+        alert("Great job! Your work has been submitted.");
+        window.location.href = 'student_assignments.html';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Settings | Skill Hub Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #4f46e5; --bg: #f1f5f9; --white: #ffffff;
+      --text: #1e293b; --border: #e2e8f0; --dark-sidebar: #0f172a;
+      --accent: #38bdf8; --danger: #ef4444;
+    }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); display: flex; }
+
+    /* Sidebar - Shared Layout */
+    .sidebar { width: 260px; background: var(--dark-sidebar); color: white; height: 100vh; position: fixed; display: flex; flex-direction: column; }
+    .sidebar-logo { padding: 25px; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; font-weight: 800; color: var(--accent); border-bottom: 1px solid #1e293b; }
+    .sidebar-nav { padding: 20px; flex-grow: 1; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 5px; transition: 0.2s; }
+    .nav-item:hover, .nav-item.active { background: #1e293b; color: white; }
+    .nav-item.active { background: var(--primary); color: white; }
+
+    /* Content Area */
+    .main-wrapper { margin-left: 260px; flex: 1; padding: 40px; }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .full-width { grid-column: span 2; }
+    
+    h2 { margin-top: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    h3 { font-size: 1.1rem; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    
+    label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #64748b; }
+    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; box-sizing: border-box; }
+    
+    .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+    .btn-save { background: var(--primary); color: white; }
+    .btn-export { background: #10b981; color: white; width: 100%; margin-top: 10px; }
+    .btn-danger { background: var(--danger); color: white; width: 100%; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo"><i class="fas fa-graduation-cap"></i><span>Skill Hub</span></div>
+    <nav class="sidebar-nav">
+      <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="students.html" class="nav-item"><i class="fas fa-users"></i> Students</a>
+      <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i> Trainers</a>
+      <a href="sessions.html" class="nav-item"><i class="fas fa-calendar-alt"></i> Sessions</a>
+      <a href="admin_settings.html" class="nav-item active"><i class="fas fa-cog"></i> Settings</a>
+    </nav>
+  </aside>
+
+  <main class="main-wrapper">
+    <h2><i class="fas fa-sliders-h"></i> System Settings</h2>
+
+    <div class="settings-grid">
+      <div class="card">
+        <h3>Admin Profile</h3>
+        <label>Display Name</label>
+        <input type="text" id="adminName" value="Super Admin">
+        <label>Contact Email</label>
+        <input type="email" id="adminEmail" value="admin@skillhub.com">
+        <button class="btn btn-save" onclick="saveProfile()">Update Profile</button>
+      </div>
+
+      <div class="card">
+        <h3>Platform Preferences</h3>
+        <label>System Theme</label>
+        <select>
+          <option>Light Mode (Default)</option>
+          <option disabled>Dark Mode (Coming Soon)</option>
+        </select>
+        <label>Currency Symbol</label>
+        <input type="text" value="$ (USD)">
+        <button class="btn btn-save">Save Preferences</button>
+      </div>
+
+      <div class="card full-width">
+        <h3><i class="fas fa-database"></i> Database Maintenance</h3>
+        <p style="color: #64748b; font-size: 0.9rem;">Maintain the integrity of your LMS data. Always export a backup before performing a factory reset.</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+          <div>
+            <label>Backup All Data</label>
+            <button class="btn btn-export" onclick="exportSystemData()"><i class="fas fa-download"></i> Export JSON</button>
+          </div>
+          <div>
+            <label>Restore System</label>
+            <input type="file" id="importFile" style="margin-bottom: 0; padding: 7px;">
+            <button class="btn btn-save" style="width: 100%; margin-top: 10px;" onclick="importSystemData()">Upload & Restore</button>
+          </div>
+          <div>
+            <label>Danger Zone</label>
+            <button class="btn btn-danger" onclick="factoryReset()"><i class="fas fa-trash-alt"></i> Reset All Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const KEYS = ['users', 'lms_courses', 'lms_materials', 'lms_videos', 'lms_assignments', 'lms_sessions', 'lms_notifications', 'lms_tickets'];
+
+    function saveProfile() {
+      const session = JSON.parse(localStorage.getItem('active_session'));
+      session.name = document.getElementById('adminName').value;
+      localStorage.setItem('active_session', JSON.stringify(session));
+      alert("Profile updated!");
+    }
+
+    function exportSystemData() {
+      let backup = {};
+      KEYS.forEach(key => backup[key] = JSON.parse(localStorage.getItem(key)) || []);
+      const blob = new Blob([JSON.stringify(backup, null, 2)], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `skillhub_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+    }
+
+    function importSystemData() {
+      const file = document.getElementById('importFile').files[0];
+      if (!file) return alert("Select a file");
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = JSON.parse(e.target.result);
+        if (confirm("Overwrite all current data?")) {
+          Object.keys(data).forEach(k => localStorage.setItem(k, JSON.stringify(data[k])));
+          location.reload();
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function factoryReset() {
+      if (confirm("CRITICAL: This deletes all users, courses, and records. Continue?")) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+      }
+    }
+  </script>
+</body>
+</html>  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings | Skill Hub Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    /* ================= CSS (Inherited from Dashboard) ================= */
+    :root {
+      --primary: #4f46e5; --secondary: #38bdf8; --bg-light: #f8fafc;
+      --text-dark: #1e293b; --muted: #64748b; --white: #ffffff; --danger: #ef4444;
+    }
+    body { margin: 0; font-family: "Segoe UI", sans-serif; background: var(--bg-light); color: var(--text-dark); }
+    
+    .top-nav { position: fixed; top: 0; width: 100%; background: var(--primary); padding: 1rem 2rem; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .navbar { max-width: 1400px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: #fff; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { color: #ffffff; font-size: 1.3rem; font-weight: 600; }
+    .top-nav-links a { color: #ffffff; text-decoration: none; margin-left: 18px; font-size: 0.9rem; opacity: 0.9; }
+
+    .app-container { display: flex; padding-top: 70px; }
+    .sidebar { width: 240px; height: calc(100vh - 70px); background: var(--white); position: fixed; left: 0; border-right: 1px solid #e5e7eb; }
+    .sidebar-nav { padding: 1rem; display: flex; flex-direction: column; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; margin-bottom: 6px; border-radius: 8px; text-decoration: none; color: var(--text-dark); font-size: 0.95rem; }
+    .nav-item:hover, .nav-item.active { background: var(--primary); color: #ffffff; }
+
+    .content { margin-left: 240px; padding: 2rem; flex: 1; }
+
+    /* ================= SETTINGS CARDS ================= */
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 20px; }
+    .card { background: var(--white); padding: 25px; border-radius: 14px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+    .card h3 { margin-top: 0; color: var(--primary); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+    
+    label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+    input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; font-family: inherit; }
+    
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header class="top-nav">
+    <div class="navbar">
+      <div class="logo">
+        <div class="logo-icon"><a href="admin_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+        <span class="logo-text">Skill Hub</span>
+      </div>
+      <nav class="top-nav-links">
+        <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="messages.html" ><i class="fas fa-comments"></i> User Chat</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i></a>
+        <a href="setting.html"><i class="fas fa-cog"></i> Settings</a></a>
+        <a href="admin_profile.html">profile</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <nav class="sidebar-nav">
+      <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+      <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+      <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Trainers</span></a>
+      <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+      <a href="materials.html" class="nav-item"><i class="fas fa-book-open"></i><span>Materials</span></a>
+      <a href="videos.html" class="nav-item"><i class="fas fa-video"></i><span>Videos</span></a>
+      <a href="sessions.html" class="nav-item"><i class="fas fa-calendar-plus"></i><span>Sessions</span></a>
+    </nav>
+  </aside>
+
+  <section class="content">
+    <div class="dashboard-header">
+      <h1>System Settings</h1>
+      <p>Configure platform preferences and manage data</p>
+    </div>
+
+    <div class="settings-grid">
+      <div class="card">
+        <h3>Admin Profile</h3>
+        <label>Display Name</label>
+        <input type="text" id="adminDisplayName" value="Super Admin">
+        <label>Email Address</label>
+        <input type="email" id="adminEmail" value="admin@skillhub.com">
+        <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+      </div>
+
+      <div class="card">
+        <h3>Preferences</h3>
+        <label>System Theme</label>
+        <select>
+          <option>Light Mode</option>
+          <option disabled>Dark Mode (Coming Soon)</option>
+        </select>
+        <label>Notifications</label>
+        <select>
+          <option>All Enabled</option>
+          <option>Only Critical</option>
+          <option>Disabled</option>
+        </select>
+        <button class="btn btn-primary">Update Preferences</button>
+      </div>
+
+      <div class="card" style="grid-column: span 2;">
+        <h3 style="color: var(--danger);">Data Management</h3>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">
+          Use these tools to maintain your local database. Resetting data will clear all students, trainers, and course materials.
+        </p>
+        <div style="display: flex; gap: 15px;">
+          <button class="btn btn-primary" onclick="exportData()">
+            <i class="fas fa-download"></i> Backup Data (JSON)
+          </button>
+          <button class="btn btn-danger" onclick="resetData()">
+            <i class="fas fa-trash-alt"></i> Reset All System Data
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+
+<script>
+  function saveSettings() {
+    alert("Profile settings saved successfully!");
+  }
+
+  function resetData() {
+    if(confirm("CRITICAL WARNING: This will permanently delete all users, courses, videos, and sessions. Are you absolutely sure?")) {
+      localStorage.clear();
+      alert("System has been reset. Redirecting to login...");
+      window.location.href = "index.html";
+    }
+  }
+
+  function exportData() {
+    const keys = ['users', 'lms_courses', 'lms_materials', 'lms_videos', 'lms_sessions', 'lms_notifications'];
+    let backup = {};
+    keys.forEach(key => {
+      backup[key] = JSON.parse(localStorage.getItem(key)) || [];
+    });
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "skillhub_backup_" + new Date().toLocaleDateString() + ".json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }
+</script>
+
+</body>
+</html>

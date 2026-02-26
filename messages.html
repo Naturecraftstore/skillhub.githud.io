@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | Skill Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+    :root { 
+        --primary: #4f46e5; 
+        --white: #ffffff; 
+        --text: #1e293b; 
+        --border: rgba(226, 232, 240, 0.3); /* Softer borders for glass effect */
+        --accent: #3b82f6;
+    }
+
+    body { 
+        font-family: 'Segoe UI', sans-serif; 
+        margin: 0; 
+        /* SETTING YOUR LOCAL IMAGE */
+        background-image: url('image.png');
+        background-size: 50%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex; 
+        height: 100vh; 
+        overflow: hidden; 
+    }
+
+    /* Navigation Sidebar - Dark & Translucent */
+    .sidebar-nav { 
+        width: 80px; 
+        background: rgba(15, 23, 42, 0.85); 
+        backdrop-filter: blur(10px); 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        padding: 20px 0; 
+        flex-shrink: 0; 
+    }
+    .nav-btn { color: #94a3b8; font-size: 1.5rem; margin-bottom: 30px; cursor: pointer; transition: 0.3s; }
+    .nav-btn:hover, .nav-btn.active { color: white; }
+
+    /* Contacts Panel - Glass Effect */
+    .contacts-panel { 
+        width: 320px; 
+        background: rgba(255, 255, 255, 0.8); 
+        backdrop-filter: blur(12px); 
+        border-right: 1px solid var(--border); 
+        display: flex; 
+        flex-direction: column; 
+    }
+    .panel-header { padding: 25px 20px; border-bottom: 1px solid var(--border); }
+    .panel-header h3 { margin: 0; font-size: 1.3rem; }
+    
+    .contact-list { overflow-y: auto; flex: 1; }
+    .contact-item { 
+        padding: 15px 20px; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+        cursor: pointer; 
+        transition: 0.2s;
+        display: flex; align-items: center; gap: 12px; position: relative;
+    }
+    .contact-item:hover { background: rgba(255, 255, 255, 0.4); }
+    .contact-item.active { background: rgba(79, 70, 229, 0.1); border-left: 4px solid var(--primary); }
+    
+    .avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+    .unread-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+
+    /* Chat Window */
+    .chat-main { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        background: rgba(241, 245, 249, 0.5); /* Slight tint over image */
+        backdrop-filter: blur(4px); 
+    }
+    .chat-header { 
+        padding: 18px 25px; 
+        border-bottom: 1px solid var(--border); 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        background: rgba(255, 255, 255, 0.8); 
+    }
+    
+    .message-area { 
+        flex: 1; 
+        padding: 25px; 
+        overflow-y: auto; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 12px; 
+    }
+    
+    /* Message Bubbles - Solid to ensure readability */
+    .msg { 
+        max-width: 65%; 
+        padding: 12px 16px; 
+        border-radius: 15px; 
+        font-size: 0.95rem; 
+        line-height: 1.4; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    }
+    .msg.sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+    .msg.received { align-self: flex-start; background: white; color: var(--text); border-bottom-left-radius: 2px; }
+    
+    .msg-time { font-size: 0.7rem; opacity: 0.7; margin-top: 5px; display: block; }
+    .sent .msg-time { text-align: right; color: #e0e7ff; }
+
+    .chat-input-area { 
+        padding: 20px; 
+        border-top: 1px solid var(--border); 
+        display: flex; 
+        gap: 12px; 
+        background: rgba(255, 255, 255, 0.9); 
+    }
+    input { flex: 1; padding: 12px 18px; border: 1px solid #ddd; border-radius: 25px; outline: none; font-size: 0.95rem; }
+</style>
+</head>
+<body>
+
+    <nav class="sidebar-nav">
+        <div class="nav-btn" onclick="goHome()" title="Back to Dashboard"><i class="fas fa-home"></i></div>
+        <div class="nav-btn active"><i class="fas fa-comment-dots"></i></div>
+    </nav>
+
+    <div class="contacts-panel">
+        <div class="panel-header">
+            <h3>Messages</h3>
+            <small id="userRoleBadge" style="color: var(--primary); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"></small>
+        </div>
+        <div class="contact-list" id="contactList">
+            </div>
+    </div>
+
+    <div class="chat-main">
+        <div class="chat-header">
+            <div id="activeContactName" style="font-weight: 600; font-size: 1.1rem;">Select a conversation</div>
+            <div id="activeContactRole" style="font-size: 0.85rem; color: #64748b;"></div>
+        </div>
+        <div class="message-area" id="messageArea">
+            <div style="margin: auto; text-align: center; color: #94a3b8;">
+                <i class="fas fa-comments" style="font-size: 4rem; margin-bottom: 10px; opacity: 0.2;"></i>
+                <p>Click on a contact to start messaging</p>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="msgInput" placeholder="Write a message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button class="btn-send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let currentReceiver = null;
+        const currentUser = JSON.parse(localStorage.getItem('active_session'));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!currentUser) { window.location.href = 'index.html'; return; }
+            document.getElementById('userRoleBadge').innerText = currentUser.role;
+            loadContacts();
+            
+            // Refresh messages every 3 seconds to simulate "live" chat
+            setInterval(renderMessages, 3000);
+        });
+
+        function goHome() {
+            window.location.href = currentUser.role + '_dashboard.html';
+        }
+
+        function loadContacts() {
+            const allUsers = JSON.parse(localStorage.getItem('skillhub_users')) || [];
+            const allMessages = JSON.parse(localStorage.getItem('skillhub_messages')) || [];
+            const contactList = document.getElementById('contactList');
+            contactList.innerHTML = '';
+
+            let filteredContacts = [];
+
+            if (currentUser.role === 'admin') {
+                filteredContacts = allUsers.filter(u => u.username !== currentUser.username);
+            } else if (currentUser.role === 'trainer') {
+                filteredContacts = allUsers.filter(u => u.role === 'admin' || (u.role === 'student' && u.trainer === currentUser.name));
+            } else if (currentUser.role === 'student') {
+                filteredContacts = allUsers.filter(u => u.role === 'admin' || (u.role === 'trainer' && u.name === currentUser.trainer));
+            }
+
+            filteredContacts.forEach(user => {
+                // Check if there are unread messages from this specific user
+                const hasUnread = allMessages.some(m => m.sender === user.username && m.receiver === currentUser.username && !m.read);
+                
+                const div = document.createElement('div');
+                div.className = 'contact-item';
+                div.id = `contact-${user.username}`;
+                div.onclick = () => selectContact(user);
+                div.innerHTML = `
+                    <div class="avatar">${user.name[0]}</div>
+                    <div style="flex:1">
+                        <div style="font-weight:600;">${user.name}</div>
+                        <small style="color:#64748b;">${user.role}</small>
+                    </div>
+                    ${hasUnread ? '<div class="unread-dot"></div>' : ''}
+                `;
+                contactList.appendChild(div);
+            });
+        }
+
+        function selectContact(user) {
+            currentReceiver = user;
+            document.getElementById('activeContactName').innerText = user.name;
+            document.getElementById('activeContactRole').innerText = user.role.toUpperCase();
+            
+            // Mark as active in UI
+            document.querySelectorAll('.contact-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`contact-${user.username}`).classList.add('active');
+
+            // --- CRITICAL: MARK MESSAGES AS READ ---
+            let allMsgs = JSON.parse(localStorage.getItem('skillhub_messages')) || [];
+            let updated = false;
+            allMsgs.forEach(m => {
+                if(m.sender === user.username && m.receiver === currentUser.username && !m.read) {
+                    m.read = true;
+                    updated = true;
+                }
+            });
+            if(updated) {
+                localStorage.setItem('skillhub_messages', JSON.stringify(allMsgs));
+                loadContacts(); // Refresh list to remove unread dot
+            }
+
+            renderMessages();
+        }
+
+        function renderMessages() {
+            if (!currentReceiver) return;
+            const messages = JSON.parse(localStorage.getItem('skillhub_messages')) || [];
+            const area = document.getElementById('messageArea');
+            
+            const chatHistory = messages.filter(m => 
+                (m.sender === currentUser.username && m.receiver === currentReceiver.username) ||
+                (m.sender === currentReceiver.username && m.receiver === currentUser.username)
+            );
+
+            // Only update DOM if message count changed (prevents flicker on interval)
+            if(area.children.length !== chatHistory.length || area.innerHTML.includes('Click on a contact')) {
+                area.innerHTML = '';
+                chatHistory.forEach(m => {
+                    const isSent = m.sender === currentUser.username;
+                    area.innerHTML += `
+                        <div class="msg ${isSent ? 'sent' : 'received'}">
+                            ${m.text}
+                            <span class="msg-time">${m.time}</span>
+                        </div>
+                    `;
+                });
+                area.scrollTop = area.scrollHeight;
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('msgInput');
+            if (!input.value.trim() || !currentReceiver) return;
+
+            const messages = JSON.parse(localStorage.getItem('skillhub_messages')) || [];
+            const newMsg = {
+                sender: currentUser.username,
+                receiver: currentReceiver.username,
+                text: input.value.trim(),
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                read: false // New messages are unread by default
+            };
+
+            messages.push(newMsg);
+            localStorage.setItem('skillhub_messages', JSON.stringify(messages));
+            input.value = '';
+            renderMessages();
+        }
+    </script>
+</body>
+</html>

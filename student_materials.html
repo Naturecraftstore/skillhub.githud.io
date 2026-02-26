@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Materials | Skill Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --secondary: #38bdf8; --bg: #f8fafc; 
+      --text: #1e293b; --white: #ffffff; --border: #e2e8f0; 
+      --pdf: #ef4444; --word: #2b579a; --excel: #1d6f42;
+    }
+
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    .top-nav {
+      position: fixed; top: 0; width: 100%; background: var(--primary);
+      padding: 0.7rem 2rem; z-index: 1000; display: flex;
+      justify-content: space-between; align-items: center; box-sizing: border-box;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: #fff; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { color: #ffffff; font-size: 1.2rem; font-weight: 600; }
+
+    .app-container { display: flex; padding-top: 65px; }
+    .sidebar { 
+      width: 240px; height: calc(100vh - 65px); background: white; 
+      position: fixed; left: 0; border-right: 1px solid var(--border); 
+      padding: 1rem; box-sizing: border-box;
+    }
+    .nav-item { 
+      display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+      text-decoration: none; color: var(--text); border-radius: 8px; margin-bottom: 5px;
+    }
+    .nav-item:hover { background: #f1f5f9; }
+    .nav-item.active { background: var(--primary); color: white; }
+
+    .content { margin-left: 240px; flex: 1; padding: 2rem; }
+    .materials-header { margin-bottom: 30px; }
+    
+    .mat-list { background: white; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .mat-item { 
+      display: flex; align-items: center; justify-content: space-between; 
+      padding: 20px; border-bottom: 1px solid var(--border);
+    }
+    .mat-item:last-child { border-bottom: none; }
+
+    .mat-info { display: flex; align-items: center; gap: 20px; }
+    .file-icon { font-size: 2.2rem; }
+    .mat-details strong { display: block; font-size: 1rem; color: var(--text); }
+    .mat-details small { color: #64748b; font-size: 0.85rem; }
+
+    .btn-download { 
+      display: flex; align-items: center; gap: 8px;
+      color: var(--primary); text-decoration: none; font-weight: 600; 
+      border: 1.5px solid var(--primary); padding: 8px 18px; 
+      border-radius: 8px; transition: 0.2s; font-size: 0.9rem; background: none; cursor: pointer;
+    }
+    .btn-download:hover { background: var(--primary); color: white; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <div class="logo-icon"><a href="student_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+      <span class="logo-text">Skill Hub <small>| Student</small></span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <nav>
+        <a href="student_dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="student_courses.html" class="nav-item"><i class="fas fa-book"></i> My Courses</a>
+        <a href="student_materials.html" class="nav-item"><i class="fas fa-folder-open"></i> Materials</a>
+        <a href="student_videos.html" class="nav-item"><i class="fas fa-play-circle"></i> Video Lessons</a>
+        <a href="student_assignments.html" class="nav-item active"><i class="fas fa-tasks"></i> Assignments</a>
+        <a href="student_sessions.html" class="nav-item"><i class="fas fa-calendar-alt"></i> <span>Live Sessions</span></a>
+        <a href="student_results.html" class="nav-item"><i class="fas fa-poll-h"></i> My Results</a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="contact.html" class="nav-item"><i class="fas fa-envelope"></i> Contact Us</a>
+        <a href="notifications.html" class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="index.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="materials-header">
+        <h1>My Study Materials</h1>
+        <p id="courseIndicator" style="color: #64748b; font-weight: 500;">Loading your curriculum...</p>
+      </div>
+      
+      <div class="mat-list" id="matList">
+        <div style="text-align:center; padding:40px; color:#94a3b8;">
+            <i class="fas fa-spinner fa-spin"></i> Connecting to library...
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const DB_NAME = 'SkillHubDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'materials';
+    let db;
+
+    // 1. Initialize IndexedDB Connection
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      loadStudentMaterials();
+    };
+
+    // 2. Helper to get file icons
+    function getFileIcon(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      if (ext === 'pdf') return { icon: 'fa-file-pdf', color: 'var(--pdf)' };
+      if (['doc', 'docx'].includes(ext)) return { icon: 'fa-file-word', color: 'var(--word)' };
+      if (['xls', 'xlsx', 'csv'].includes(ext)) return { icon: 'fa-file-excel', color: 'var(--excel)' };
+      return { icon: 'fa-file-alt', color: '#64748b' };
+    }
+
+    // 3. Load and Filter Materials
+    function loadStudentMaterials() {
+      const session = JSON.parse(localStorage.getItem('active_session') || '{}');
+      const studentCourse = session.course; // e.g., "Java Full Stack"
+      const listContainer = document.getElementById('matList');
+      
+      if (!studentCourse) {
+        listContainer.innerHTML = `<p style="padding:20px;">Error: No course assigned to your profile.</p>`;
+        return;
+      }
+
+      document.getElementById('courseIndicator').innerText = `Resources for: ${studentCourse}`;
+
+      const transaction = db.transaction([STORE_NAME], 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const getAll = store.getAll();
+
+      getAll.onsuccess = () => {
+        const allMaterials = getAll.result;
+        
+        // FILTER: Only show materials that match the student's assigned course
+        const filtered = allMaterials.filter(m => m.course === studentCourse);
+
+        if (filtered.length === 0) {
+          listContainer.innerHTML = `
+            <div style="text-align:center; padding:60px; color:#94a3b8;">
+              <i class="fas fa-folder-open" style="font-size:3rem; margin-bottom:15px; opacity:0.5;"></i>
+              <p>No materials have been uploaded for <b>${studentCourse}</b> yet.</p>
+            </div>`;
+          return;
+        }
+
+        listContainer.innerHTML = filtered.map(m => {
+          const style = getFileIcon(m.filename);
+          return `
+            <div class="mat-item">
+              <div class="mat-info">
+                <i class="fas ${style.icon} file-icon" style="color: ${style.color}"></i>
+                <div class="mat-details">
+                  <strong>${m.title}</strong>
+                  <small>${m.filename} • ${m.size} • Added by ${m.uploadedBy || 'Instructor'}</small>
+                </div>
+              </div>
+              <button onclick="downloadFile(${m.id})" class="btn-download">
+                <i class="fas fa-cloud-download-alt"></i> Download
+              </button>
+            </div>
+          `;
+        }).join('');
+      };
+    }
+
+    // 4. Download Binary Data from IndexedDB
+    window.downloadFile = function(id) {
+      const transaction = db.transaction([STORE_NAME], 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(id);
+
+      request.onsuccess = () => {
+        const record = request.result;
+        // Create a blob URL from the stored File object
+        const url = URL.createObjectURL(record.fileData);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = record.filename;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      };
+    };
+  </script>
+</body>
+</html>

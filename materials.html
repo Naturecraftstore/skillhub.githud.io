@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Materials | Skill Hub LMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f4f7f6;
+      --text: #1e293b;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --radius: 8px;
+      --shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+    .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+    .top-nav { background: var(--primary); color: var(--white); padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .navbar { display: flex; justify-content: space-between; align-items: center; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: #fff; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { color: #ffffff; font-size: 1.3rem; font-weight: 600; }
+
+    .top-nav-links a { color: white; text-decoration: none; margin-left: 15px; font-size: 1rem; transition: 0.2s; }
+    .main-content { display: flex; flex: 1; }
+
+    .sidebar { width: 220px; background: var(--white); border-right: 1px solid var(--border); padding: 1.5rem 1rem; min-height: calc(100vh - 70px); }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 8px; border-radius: var(--radius); text-decoration: none; color: var(--text); transition: 0.2s; }
+    .nav-item:hover, .nav-item.active { background: var(--primary); color: var(--white); }
+
+    .content-area { flex: 1; padding: 2rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    
+    .form-card { background: var(--white); padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow); display: none; }
+    .form-card h3 { margin-bottom: 15px; color: var(--primary); }
+    .form-card input, .form-card select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; }
+
+    .btn-add { background: var(--primary); color: var(--white); border: none; padding: 10px 20px; border-radius: var(--radius); cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-cancel { background: #64748b; margin-left: 10px; }
+    .btn-view { color: var(--primary); font-size: 1.2rem; cursor: pointer; margin-right: 15px; border: none; background: none; }
+    .btn-delete { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2rem; }
+
+    #searchInput { width: 300px; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; }
+
+    .card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); overflow-x: auto; }
+    .dashboard-table { width: 100%; border-collapse: collapse; }
+    .dashboard-table th, .dashboard-table td { padding: 15px; border-bottom: 1px solid var(--border); text-align: left; }
+    .dashboard-table th { background: #f8fafc; color: #64748b; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+
+    @media (max-width: 768px) { .sidebar { display: none; } #searchInput { width: 100%; } }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header class="top-nav">
+    <div class="navbar">
+      <div class="logo">
+        <div class="logo-icon"><img src="image.png" alt="Logo"></div>
+        <span class="logo-text">Skill Hub</span>
+      </div>
+      <nav class="top-nav-links">
+        <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="messages.html" ><i class="fas fa-comments"></i> User Chat</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <aside class="sidebar">
+      <nav>
+        <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+        <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Trainers</span></a>
+        <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+        <a href="materials.html" class="nav-item active"><i class="fas fa-book-open"></i><span>Materials</span></a>
+        <a href="videos.html" class="nav-item"><i class="fas fa-video"></i><span>Videos</span></a>
+        <a href="assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <div class="page-header">
+        <h1>Study Materials (IndexedDB Sync)</h1>
+        <button id="uploadBtn" class="btn-add" onclick="toggleUploadForm()"><i class="fas fa-upload"></i> Upload Material</button>
+      </div>
+
+      <div id="uploadForm" class="form-card">
+        <h3>Upload New Material</h3>
+        <input type="text" id="matTitle" placeholder="Document Title (e.g. React Cheat Sheet)">
+        
+        <select id="matCourse">
+          <option value="">-- Select Course to Assign --</option>
+        </select>
+
+        <input type="file" id="matFile">
+        
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-add" onclick="saveMaterial()">Submit</button>
+            <button class="btn-add btn-cancel" onclick="toggleUploadForm()">Cancel</button>
+        </div>
+      </div>
+
+      <input type="text" id="searchInput" placeholder="Search materials..." onkeyup="searchMaterials()">
+
+      <div class="card">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Assigned Course</th>
+              <th>Filename</th>
+              <th>Size</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="materialsBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+/** * INDEXED DB CONFIGURATION
+ */
+const DB_NAME = 'SkillHubDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'materials';
+let db;
+
+// Initialize IndexedDB
+const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+request.onupgradeneeded = (e) => {
+    db = e.target.result;
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+    }
+};
+
+request.onsuccess = (e) => {
+    db = e.target.result;
+    renderMaterials();
+    loadCourseDropdown();
+};
+
+request.onerror = (e) => console.error("Database error:", e.target.error);
+
+/** * UI FUNCTIONS
+ */
+
+// Toggle Form Visibility
+window.toggleUploadForm = function() {
+    const form = document.getElementById("uploadForm");
+    form.style.display = (form.style.display === "block") ? "none" : "block";
+};
+
+// Load Courses from LocalStorage into Dropdown
+function loadCourseDropdown() {
+    const dropdown = document.getElementById('matCourse');
+    // Checks the simple key used for dropdown strings
+    const courses = JSON.parse(localStorage.getItem('skillhub_courses')) || [];
+    
+    dropdown.innerHTML = '<option value="">-- Select Course --</option>' + 
+        courses.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+// Save Material to IndexedDB
+window.saveMaterial = function() {
+    const title = document.getElementById('matTitle').value.trim();
+    const course = document.getElementById('matCourse').value;
+    const fileInput = document.getElementById('matFile');
+    const file = fileInput.files[0];
+
+    if (!title || !course || !file) {
+        return alert("Please enter a title, select a course, and choose a file.");
+    }
+
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+
+    const newEntry = {
+        title: title,
+        course: course,
+        filename: file.name,
+        fileData: file, // Store the actual File blob
+        size: (file.size / 1024 / 1024).toFixed(2) + " MB",
+        date: new Date().toLocaleDateString(),
+        uploadedBy: JSON.parse(localStorage.getItem('active_session') || '{}').name || 'Admin'
+    };
+
+    const addRequest = store.add(newEntry);
+    addRequest.onsuccess = () => {
+        alert(`Success! "${title}" is now available for ${course} students.`);
+        // Reset form
+        document.getElementById('matTitle').value = '';
+        document.getElementById('matCourse').value = '';
+        fileInput.value = '';
+        toggleUploadForm();
+        renderMaterials();
+    };
+};
+
+// Render the Table
+function renderMaterials() {
+    const tbody = document.getElementById('materialsBody');
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const getAll = store.getAll();
+
+    getAll.onsuccess = () => {
+        const materials = getAll.result;
+        if (materials.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No materials uploaded yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = materials.map(m => `
+            <tr>
+                <td><strong>${m.title}</strong></td>
+                <td><span style="color: var(--primary); font-weight:600;">${m.course}</span></td>
+                <td>${m.filename}</td>
+                <td>${m.size}</td>
+                <td>
+                    <button class="btn-view" onclick="downloadMaterial(${m.id})" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn-delete" onclick="deleteMaterial(${m.id})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    };
+}
+
+// Download Logic (Blob URL conversion)
+window.downloadMaterial = function(id) {
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const getReq = store.get(id);
+
+    getReq.onsuccess = () => {
+        const record = getReq.result;
+        const url = URL.createObjectURL(record.fileData);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = record.filename;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    };
+};
+
+// Delete Logic
+window.deleteMaterial = function(id) {
+    if (!confirm("Are you sure? This will remove the file for all students.")) return;
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    transaction.objectStore(STORE_NAME).delete(id);
+    transaction.oncomplete = () => renderMaterials();
+};
+
+// Search Logic
+window.searchMaterials = function() {
+    const val = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#materialsBody tr');
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+    });
+};
+</script>
+
+</body>
+</html>

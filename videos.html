@@ -1,0 +1,676 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Library | Skill Hub Admin</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+/* ================= ROOT VARIABLES ================= */
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --bg-body: #f1f5f9;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --white: #ffffff;
+  --border-color: #e2e8f0;
+  --dark-sidebar: #0f172a;
+  --accent-yellow: #fef3c7;
+  --accent-orange: #d97706;
+  --danger: #ef4444;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --radius: 12px;
+}
+
+/* ================= BASE STYLES ================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* ================= TOP NAVIGATION ================= */
+.top-nav {
+  background: var(--primary);
+  height: 65px;
+  padding: 0 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.top-nav-links a {
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-left: 20px;
+  transition: 0.2s;
+}
+
+.top-nav-links a:hover {
+  color: white;
+}
+
+/* ================= LAYOUT ================= */
+.app-body {
+  display: flex;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 240px;
+  background: var(--dark-sidebar);
+  min-height: calc(100vh - 65px);
+  padding-top: 20px;
+  position: sticky;
+  top: 65px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.nav-item:hover {
+  color: white;
+  background: rgba(255,255,255,0.05);
+}
+
+.nav-item.active {
+  background: rgba(79, 70, 229, 0.1);
+  color: #818cf8;
+  border-right: 4px solid var(--primary);
+}
+
+.nav-item i {
+  width: 20px;
+  font-size: 1.1rem;
+}
+
+/* ================= CONTENT AREA ================= */
+.content-area {
+  flex: 1;
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+/* ================= FORM CARD ================= */
+.form-card {
+  background: var(--white);
+  padding: 25px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 30px;
+  display: none; /* Controlled by .show class in JS */
+}
+
+.form-card.show {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.form-card h3 {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* ================= TABLES & CARDS ================= */
+#searchInput {
+  width: 320px;
+  margin-bottom: 25px;
+  border-radius: 25px;
+  padding-left: 20px;
+  background: var(--white);
+}
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table th {
+  background: #f8fafc;
+  padding: 15px 20px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.dashboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+.video-icon {
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+/* Course Tag */
+.course-tag {
+  background: var(--accent-yellow);
+  color: var(--accent-orange);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ================= BUTTONS ================= */
+.btn-add {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-add:hover {
+  background: var(--primary-dark);
+}
+
+.cancel-btn {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.cancel-btn:hover {
+  background: #cbd5e1;
+}
+
+.actions a {
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 5px;
+  transition: 0.2s;
+}
+
+.actions button:hover {
+  color: var(--danger);
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+  .sidebar { width: 80px; }
+  .sidebar span { display: none; }
+  .nav-item { justify-content: center; padding: 15px; }
+}
+
+@media (max-width: 768px) {
+  .app-body { flex-direction: column; }
+  .sidebar { width: 100%; min-height: auto; position: relative; top: 0; display: flex; overflow-x: auto; }
+  .content-area { padding: 20px; }
+  #searchInput { width: 100%; }
+}
+  </style>
+</head>
+
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <div class="logo-icon"><a href="admin_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+      <span class="logo-text">Skill Hub</span>
+    </div>
+    <nav class="top-nav-links">
+      <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="messages.html" ><i class="fas fa-comments"></i> User Chat</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i></a>
+        <a href="setting.html"><i class="fas fa-cog"></i> Settings</a></a>
+        <a href="admin_profile.html">profile</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </nav>
+  </header>
+
+  <div class="app-body">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+        <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Trainers</span></a>
+        <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+        <a href="materials.html" class="nav-item"><i class="fas fa-book-open"></i><span>Materials</span></a>
+        <a href="videos.html" class="nav-item active"><i class="fas fa-video"></i><span>Videos</span></a>
+        <a href="assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+        <a href="sessions.html" class="nav-item"><i class="fas fa-calendar-plus"></i><span>Sessions</span></a>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <div class="page-header">
+        <h1>Video Lectures</h1>
+        <button class="btn-add" onclick="toggleVideoForm()"><i class="fas fa-plus"></i> Add Video</button>
+      </div>
+
+      <div id="addVideoForm" class="form-card">
+        <h3>Publish New Lecture</h3>
+        <input type="text" id="vidTitle" placeholder="Video Title (e.g. Intro to React Hooks)">
+        <input type="url" id="vidUrl" placeholder="Video URL (YouTube/Vimeo Embed Link)">
+        <select id="vidCourse">
+            <option value="">Select Course</option>
+            </select>
+        <div>
+          <button class="btn-add" onclick="saveVideo()">Publish Video</button>
+          <button class="btn-add cancel-btn" onclick="toggleVideoForm()">Cancel</button>
+        </div>
+      </div>
+
+      <input type="text" id="searchInput" placeholder="Search videos..." onkeyup="searchVideos()">
+
+      <div class="card">
+        <table class="dashboard-table" id="videoTable">
+          <thead>
+            <tr>
+              <th>Video Title</th>
+              <th>Course</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="videoBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+<script>
+const STORAGE_KEY = 'lms_videos';
+
+function getVideos() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : [
+    { id: 1, title: "JavaScript Basics - Variables", url: "https://www.youtube.com/embed/dQw4w9WgXcQ", course: "Web Dev" },
+    { id: 2, title: "Introduction to Neural Networks", url: "#", course: "Data Science" }
+  ];
+}
+
+function renderVideos() {
+  const videos = getVideos();
+  const tbody = document.getElementById('videoBody');
+  
+  tbody.innerHTML = videos.map(v => `
+    <tr>
+      <td><i class="fas fa-play-circle video-icon"></i> <strong>${v.title}</strong></td>
+      <td><span style="background:#fef3c7; color:#d97706; padding:4px 10px; border-radius:20px; font-size:0.8rem;">${v.course}</span></td>
+      <td class="actions">
+        <a href="${v.url}" target="_blank" style="margin-right:15px; color:var(--primary);"><i class="fas fa-eye"></i> Preview</a>
+        <button onclick="deleteVideo(${v.id})"><i class="fas fa-trash-alt"></i></button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="3" style="text-align:center;">No videos uploaded yet.</td></tr>';
+}
+
+function saveVideo() {
+  const title = document.getElementById('vidTitle').value;
+  const url = document.getElementById('vidUrl').value;
+  const course = document.getElementById('vidCourse').value || "General";
+
+  if (!title || !url) return alert("Please fill all fields");
+
+  const videos = getVideos();
+  videos.push({ id: Date.now(), title, url, course });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(videos));
+  
+  document.getElementById('vidTitle').value = '';
+  document.getElementById('vidUrl').value = '';
+  toggleVideoForm();
+  renderVideos();
+}
+
+function deleteVideo(id) {
+  if (confirm("Delete this video?")) {
+    const videos = getVideos().filter(v => v.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(videos));
+    renderVideos();
+  }
+}
+
+function toggleVideoForm() {
+  document.getElementById("addVideoForm").classList.toggle("show");
+}
+
+function searchVideos() {
+  const value = document.getElementById("searchInput").value.toLowerCase();
+  document.querySelectorAll("#videoTable tbody tr").forEach(row => {
+    row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+  });
+}
+
+function logout() {
+    localStorage.removeItem('active_session');
+}
+
+document.addEventListener('DOMContentLoaded', renderVideos);
+</script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Library | Skill Hub Admin</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --bg-body: #f1f5f9;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --white: #ffffff;
+      --border-color: #e2e8f0;
+      --dark-sidebar: #0f172a;
+      --radius: 12px;
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+    /* Layout */
+    .top-nav { background: var(--primary); height: 65px; padding: 0 25px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo-icon { width: 38px; height: 38px; background: var(--white); border-radius: 8px; overflow: hidden; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .logo-text { font-size: 1.2rem; font-weight: 700; color: white; }
+
+    .app-body { display: flex; }
+    .sidebar { width: 240px; background: var(--dark-sidebar); min-height: calc(100vh - 65px); position: sticky; top: 65px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: #94a3b8; text-decoration: none; font-size: 0.95rem; }
+    .nav-item.active { background: rgba(79, 70, 229, 0.1); color: #818cf8; border-right: 4px solid var(--primary); }
+
+    /* Content Area */
+    .content-area { flex: 1; padding: 30px; max-width: 1200px; margin: 0 auto; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    
+    .form-card { background: var(--white); padding: 25px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-md); margin-bottom: 30px; display: none; }
+    .form-card.show { display: block; animation: fadeIn 0.3s ease; }
+    
+    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 8px; }
+    
+    .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border-color); overflow: hidden; }
+    .dashboard-table { width: 100%; border-collapse: collapse; }
+    .dashboard-table th { background: #f8fafc; padding: 15px 20px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; text-align: left; }
+    .dashboard-table td { padding: 18px 20px; border-bottom: 1px solid var(--border-color); }
+
+    .btn-add { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+    .cancel-btn { background: #e2e8f0; color: #475569; margin-left: 10px; }
+    
+    .actions button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; }
+    .actions button:hover { color: #ef4444; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <a href="admin_dashboard.html" class="logo">
+      <div class="logo-icon"><img src="image.png" alt="Logo"></div>
+      <span class="logo-text">Skill Hub</span>
+    </a>
+    <nav style="color: white;">Admin Portal</nav>
+  </header>
+
+  <div class="app-body">
+    <aside class="sidebar">
+      <nav>
+        <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+        <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Trainers</span></a>
+        <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+        <a href="materials.html" class="nav-item"><i class="fas fa-book-open"></i><span>Materials</span></a>
+        <a href="videos.html" class="nav-item active"><i class="fas fa-video"></i><span>Videos</span></a>
+        <a href="assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <div class="page-header">
+        <h1>Video Lectures</h1>
+        <button class="btn-add" onclick="toggleVideoForm()"><i class="fas fa-plus"></i> Add Video</button>
+      </div>
+
+      <div id="addVideoForm" class="form-card">
+        <h3>Publish New Lecture</h3>
+        <input type="text" id="vidTitle" placeholder="Video Title (e.g. Intro to React Hooks)">
+        <input type="url" id="vidUrl" placeholder="Video URL (YouTube/Vimeo Embed Link)">
+        <select id="vidCourse">
+            <option value="">-- Select Course --</option>
+        </select>
+        <div>
+          <button class="btn-add" onclick="saveVideo()">Publish Video</button>
+          <button class="btn-add cancel-btn" onclick="toggleVideoForm()">Cancel</button>
+        </div>
+      </div>
+
+      <input type="text" id="searchInput" placeholder="Search videos..." onkeyup="searchVideos()" style="width: 300px; padding: 10px; border-radius: 20px; border: 1px solid #ddd; margin-bottom: 20px;">
+
+      <div class="card">
+        <table class="dashboard-table" id="videoTable">
+          <thead>
+            <tr>
+              <th>Video Title</th>
+              <th>Assigned Course</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="videoBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+<script>
+// Use consistent keys with the rest of the app
+const VIDEO_KEY = 'skillhub_videos';
+const COURSE_KEY = 'skillhub_courses';
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCourseDropdown();
+    renderVideos();
+});
+
+// 1. Load courses from localStorage (Set by Admin in courses.html)
+function loadCourseDropdown() {
+    const courses = JSON.parse(localStorage.getItem(COURSE_KEY)) || [];
+    const dropdown = document.getElementById('vidCourse');
+    
+    dropdown.innerHTML = '<option value="">-- Select Course --</option>' + 
+        courses.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+// 2. Render Video Table
+function renderVideos() {
+    const videos = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    const tbody = document.getElementById('videoBody');
+    
+    if (videos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">No videos found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = videos.map(v => `
+        <tr>
+            <td><i class="fas fa-play-circle" style="color:var(--primary); margin-right:10px;"></i> <strong>${v.title}</strong></td>
+            <td><span style="background:#fef3c7; color:#d97706; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:700;">${v.course}</span></td>
+            <td class="actions">
+                <a href="${v.url}" target="_blank" style="margin-right:15px; color:var(--primary); text-decoration:none; font-weight:600;"><i class="fas fa-external-link-alt"></i> View</a>
+                <button onclick="deleteVideo(${v.id})"><i class="fas fa-trash-alt"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// 3. Save Video
+function saveVideo() {
+    const title = document.getElementById('vidTitle').value.trim();
+    const url = document.getElementById('vidUrl').value.trim();
+    const course = document.getElementById('vidCourse').value;
+
+    if (!title || !url || !course) {
+        return alert("Please provide a title, a valid URL, and select a course.");
+    }
+
+    const videos = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    const newVideo = {
+        id: Date.now(),
+        title: title,
+        url: url,
+        course: course,
+        date: new Date().toLocaleDateString()
+    };
+
+    videos.push(newVideo);
+    localStorage.setItem(VIDEO_KEY, JSON.stringify(videos));
+
+    // Reset UI
+    document.getElementById('vidTitle').value = '';
+    document.getElementById('vidUrl').value = '';
+    document.getElementById('vidCourse').value = '';
+    toggleVideoForm();
+    renderVideos();
+}
+
+// 4. Delete Video
+function deleteVideo(id) {
+    if (!confirm("Are you sure you want to remove this video lecture?")) return;
+    let videos = JSON.parse(localStorage.getItem(VIDEO_KEY)) || [];
+    videos = videos.filter(v => v.id !== id);
+    localStorage.setItem(VIDEO_KEY, JSON.stringify(videos));
+    renderVideos();
+}
+
+// 5. Helpers
+function toggleVideoForm() {
+    document.getElementById("addVideoForm").classList.toggle("show");
+}
+
+function searchVideos() {
+    const value = document.getElementById("searchInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#videoTable tbody tr");
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+    });
+}
+</script>
+</body>
+</html>

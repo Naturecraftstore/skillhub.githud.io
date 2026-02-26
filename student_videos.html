@@ -1,0 +1,340 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Lessons | Skill Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --bg: #f8fafc; --text: #1e293b; 
+      --white: #ffffff; --border: #e2e8f0; 
+    }
+
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    .top-nav {
+      position: fixed; top: 0; width: 100%; background: var(--primary);
+      padding: 0.7rem 2rem; z-index: 1000; display: flex;
+      justify-content: space-between; align-items: center; box-sizing: border-box;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: #fff; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { color: #ffffff; font-size: 1.2rem; font-weight: 600; }
+
+    .app-container { display: flex; padding-top: 65px; }
+    .sidebar { 
+      width: 240px; height: calc(100vh - 65px); background: white; 
+      position: fixed; left: 0; border-right: 1px solid var(--border); 
+      padding: 1rem; box-sizing: border-box;
+    }
+    .nav-item { 
+      display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+      text-decoration: none; color: var(--text); border-radius: 8px; margin-bottom: 5px;
+    }
+    .nav-item.active { background: var(--primary); color: white; }
+
+    .content { margin-left: 240px; flex: 1; padding: 2rem; }
+
+    /* Video Player Area */
+    .video-main {
+      background: #000; width: 100%; aspect-ratio: 16/9;
+      border-radius: 12px; margin-bottom: 20px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .video-main iframe { width: 100%; height: 100%; border: none; }
+
+    /* Video Grid */
+    .video-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px; margin-top: 30px;
+    }
+    .video-card {
+      background: white; border-radius: 12px; overflow: hidden;
+      cursor: pointer; transition: 0.3s; border: 1px solid var(--border);
+    }
+    .video-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+    .thumbnail {
+      width: 100%; height: 160px; background: #1e293b;
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .thumbnail i { font-size: 3rem; color: white; opacity: 0.5; }
+    .thumbnail .play-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(79, 70, 229, 0.2); opacity: 0; transition: 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .video-card:hover .play-overlay { opacity: 1; }
+    .video-card:hover .play-overlay i { opacity: 1; transform: scale(1.2); }
+
+    .video-info { padding: 15px; }
+    .video-info h4 { margin: 0 0 5px 0; font-size: 1rem; }
+    .video-info p { margin: 0; font-size: 0.8rem; color: #64748b; }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <div class="logo-icon"><a href="student_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+      <span class="logo-text">Skill Hub <small>| Student</small></span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <nav>
+        <a href="student_dashboard.html" class="nav-item active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="student_courses.html" class="nav-item"><i class="fas fa-book"></i> My Courses</a>
+        <a href="student_materials.html" class="nav-item"><i class="fas fa-folder-open"></i> Materials</a>
+        <a href="student_videos.html" class="nav-item"><i class="fas fa-play-circle"></i> Video Lessons</a>
+        <a href="student_assignments.html" class="nav-item"><i class="fas fa-tasks"></i> Assignments</a>
+        <a href="student_results.html" class="nav-item"><i class="fas fa-poll-h"></i> My Results</a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="contact.html" class="nav-item"><i class="fas fa-envelope"></i> Contact Us</a>
+        <a href="notifications.html" class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="index.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div id="playerContainer" class="video-main" style="display:none;">
+        <iframe id="mainPlayer" allowfullscreen></iframe>
+      </div>
+
+      <div class="section-header">
+        <h1>Educational Content</h1>
+        <p id="videoCount" style="color: #64748b;">Loading lessons...</p>
+      </div>
+
+      <div class="video-grid" id="videoList">
+        </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const videos = JSON.parse(localStorage.getItem('lms_videos')) || [];
+      const videoList = document.getElementById('videoList');
+      const videoCount = document.getElementById('videoCount');
+
+      if (videos.length === 0) {
+        videoCount.innerText = "No videos uploaded yet.";
+        videoList.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 50px; color:#94a3b8;">Check back later for new content!</p>`;
+        return;
+      }
+
+      videoCount.innerText = `${videos.length} Lessons Available`;
+
+      videoList.innerHTML = videos.map((v, index) => `
+        <div class="video-card" onclick="playVideo('${v.link}')">
+          <div class="thumbnail">
+            <i class="fas fa-play-circle"></i>
+            <div class="play-overlay"><i class="fas fa-play" style="color:white; font-size:2rem;"></i></div>
+          </div>
+          <div class="video-info">
+            <h4>${v.title}</h4>
+            <p><i class="fas fa-chalkboard-teacher"></i> ${v.uploadedBy || 'Instructor'}</p>
+          </div>
+        </div>
+      `).join('');
+    });
+
+    function playVideo(url) {
+      const container = document.getElementById('playerContainer');
+      const player = document.getElementById('mainPlayer');
+      
+      // Convert standard YouTube link to Embed link if necessary
+      let embedUrl = url;
+      if (url.includes('youtube.com/watch?v=')) {
+        embedUrl = url.replace('watch?v=', 'embed/');
+      } else if (url.includes('youtu.be/')) {
+        embedUrl = url.replace('youtu.be/', 'youtube.com/embed/');
+      }
+
+      player.src = embedUrl;
+      container.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Lessons | Skill Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --bg: #f8fafc; --text: #1e293b; 
+      --white: #ffffff; --border: #e2e8f0; --radius: 12px;
+    }
+
+    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    .top-nav {
+      position: fixed; top: 0; width: 100%; background: var(--primary);
+      padding: 0.7rem 2rem; z-index: 1000; display: flex;
+      justify-content: space-between; align-items: center; box-sizing: border-box;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; font-weight: 700; }
+    .logo-icon { width: 35px; height: 35px; background: white; border-radius: 8px; overflow: hidden; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+    .app-container { display: flex; padding-top: 65px; }
+    .sidebar { 
+      width: 240px; height: calc(100vh - 65px); background: white; 
+      position: fixed; left: 0; border-right: 1px solid var(--border); 
+      padding: 1rem; box-sizing: border-box;
+    }
+    .nav-item { 
+      display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+      text-decoration: none; color: #64748b; border-radius: 8px; margin-bottom: 5px;
+    }
+    .nav-item.active { background: var(--primary); color: white; }
+
+    .content { margin-left: 240px; flex: 1; padding: 2rem; }
+    
+    /* Video Grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .video-card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .video-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+    .thumbnail-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .thumbnail-placeholder i { font-size: 3rem; color: var(--primary); }
+    
+    .video-info { padding: 15px; }
+    .video-info h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text); }
+    .video-info span { font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+
+    .btn-play {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .empty-state { text-align: center; padding: 100px 20px; color: #94a3b8; grid-column: 1 / -1; }
+    .empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
+
+    @media (max-width: 768px) { .sidebar { display: none; } .content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <a href="student_dashboard.html" class="logo">
+      <div class="logo-icon"><img src="image.png" alt="Logo"></div>
+      <span>Skill Hub</span>
+    </a>
+    <div style="color: white; font-size: 0.9rem;" id="studentCourseName">My Course</div>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <nav>
+        <a href="student_dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="student_courses.html" class="nav-item"><i class="fas fa-book"></i> My Courses</a>
+        <a href="student_materials.html" class="nav-item"><i class="fas fa-folder-open"></i> Materials</a>
+        <a href="student_videos.html" class="nav-item"><i class="fas fa-play-circle"></i> Video Lessons</a>
+        <a href="student_assignments.html" class="nav-item active"><i class="fas fa-tasks"></i> Assignments</a>
+        <a href="student_sessions.html" class="nav-item"><i class="fas fa-calendar-alt"></i> <span>Live Sessions</span></a>
+        <a href="student_results.html" class="nav-item"><i class="fas fa-poll-h"></i> My Results</a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="contact.html" class="nav-item"><i class="fas fa-envelope"></i> Contact Us</a>
+        <a href="notifications.html" class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="index.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="header">
+        <h1>Video Curriculum</h1>
+        <p id="welcomeMsg" style="color: #64748b;">Watch your lectures at your own pace.</p>
+      </div>
+
+      <div class="video-grid" id="videoGrid">
+        </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Get student session
+      const session = JSON.parse(localStorage.getItem('active_session') || '{}');
+      const studentCourse = session.course; // e.g., "Web Dev"
+
+      if (!studentCourse) {
+        document.getElementById('videoGrid').innerHTML = '<div class="empty-state">No course assigned to your profile.</div>';
+        return;
+      }
+
+      document.getElementById('studentCourseName').innerText = `Enrolled: ${studentCourse}`;
+      document.getElementById('welcomeMsg').innerText = `Curated video lessons for ${studentCourse} students.`;
+
+      // 2. Load and Filter Videos
+      const allVideos = JSON.parse(localStorage.getItem('skillhub_videos')) || [];
+      const filteredVideos = allVideos.filter(v => v.course === studentCourse);
+
+      const grid = document.getElementById('videoGrid');
+
+      if (filteredVideos.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-video-slash"></i>
+            <h3>No Videos Yet</h3>
+            <p>Your instructors haven't uploaded videos for <b>${studentCourse}</b> yet.</p>
+          </div>`;
+        return;
+      }
+
+      // 3. Render Cards
+      grid.innerHTML = filteredVideos.map(v => `
+        <div class="video-card">
+          <div class="thumbnail-placeholder">
+            <i class="fas fa-play-circle"></i>
+          </div>
+          <div class="video-info">
+            <span>Lesson</span>
+            <h3>${v.title}</h3>
+            <a href="${v.url}" target="_blank" class="btn-play">
+              <i class="fas fa-play"></i> Watch Now
+            </a>
+          </div>
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+</html>

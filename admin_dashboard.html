@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Hub | Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+  /* ================= ROOT & VARIABLES ================= */
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --secondary: #38bdf8;
+  --accent: #fb7185;
+  --bg-light: #f1f5f9;
+  --white: #ffffff;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --sidebar-width: 260px;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* ================= BASE STYLES ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+/* ================= TOP NAVIGATION ================= */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 1001;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--white);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-text {
+  color: var(--white);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.top-nav-links a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-nav-links a:hover {
+  color: var(--white);
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - 70px);
+  background: var(--white);
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+}
+
+.nav-item i {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.nav-item:hover {
+  background: #f8fafc;
+  color: var(--primary);
+}
+
+.nav-item.active {
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* ================= MAIN CONTENT ================= */
+.content {
+  margin-left: var(--sidebar-width);
+  margin-top: 70px;
+  padding: 2.5rem;
+  min-height: calc(100vh - 70px);
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.dashboard-header p {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* ================= STATS CARDS ================= */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stats-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+}
+
+.stats-card h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.stats-card p {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+/* ================= CHART SECTION ================= */
+.chart-section {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  max-width: 600px;
+
+    position: relative;
+    height: 350px; /* Adjust this to your liking */
+    width: 100%;
+}
+.chart-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+}
+
+/* ================= BUTTONS ================= */
+.btn-reset {
+  margin-top: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset:hover {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 80px;
+  }
+  .nav-item span, .logo-text {
+    display: none;
+  }
+  .nav-item {
+    justify-content: center;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .content {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+  .top-nav-links {
+    display: none; /* Hide links on mobile, or implement a burger menu */
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app-container">
+  <header class="top-nav">
+    <div class="navbar">
+     <div class="logo">
+  <div class="logo-icon">
+    <a href="admin_dashboard.html"><img src="image.png" alt="Skill Hub Logo"></a>
+  </div>
+  <span class="logo-text">Skill Hub</span>
+</div>
+
+      <nav class="top-nav-links">
+        <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="messages.html" ><i class="fas fa-comments"></i> User Chat</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i></a>
+        <a href="setting.html"><i class="fas fa-cog"></i> Settings</a></a>
+        <a href="admin_profile.html">profile</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+      <a href="admin_dashboard.html" class="nav-item active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+      <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+      <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Trainers</span></a>
+      <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+      <a href="materials.html" class="nav-item"><i class="fas fa-book-open"></i><span>Materials</span></a>
+      <a href="videos.html" class="nav-item"><i class="fas fa-video"></i><span>Videos</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+      <a href="sessions.html" class="nav-item"><i class="fas fa-calendar-plus"></i><span>Sessions</span></a>
+      </nav>
+  </aside>
+
+  <section class="content">
+    <div class="dashboard-header">
+      <h1>Admin Dashboard</h1>
+      <p>Real-time system statistics</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stats-card">
+        <h3>Students</h3>
+        <p id="stat-students">0</p>
+      </div>
+      <div class="stats-card">
+        <h3>Trainers</h3>
+        <p id="stat-trainers">0</p>
+      </div>
+      <div class="stats-card">
+        <h3>Courses</h3>
+        <p id="stat-courses">0</p>
+      </div>
+      <div class="stats-card">
+        <h3>Materials</h3>
+        <p id="stat-materials">0</p>
+      </div>
+      <div class="stats-card">
+        <h3>Videos</h3>
+        <p id="stat-videos">0</p>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h2>User Analytics</h2>
+      <canvas id="userChart"></canvas>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button onclick="resetData()" style="padding: 10px; cursor:pointer; background:#fee2e2; border:1px solid #ef4444; border-radius:5px; color:#b91c1c;">
+            <i class="fas fa-redo"></i> Reset All Data
+        </button>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* ================= UNIFIED DASHBOARD LOGIC ================= */
+
+// Configuration for High-Capacity Materials (IndexedDB)
+const DB_NAME = 'SkillHubDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'materials';
+
+/**
+ * Main function to sync all data (LocalStorage + IndexedDB)
+ */
+async function updateDashboard() {
+    console.log("Syncing Unified Dashboard Stats...");
+
+    // 1. Fetch data from all potential LocalStorage keys
+    const users = JSON.parse(localStorage.getItem('users')) || 
+                  JSON.parse(localStorage.getItem('skillhub_users')) || [];
+    
+    const courses = JSON.parse(localStorage.getItem('skillhub_courses_detailed')) || 
+                    JSON.parse(localStorage.getItem('lms_courses')) || [];
+
+    const videos = JSON.parse(localStorage.getItem('lms_videos')) || 
+                   JSON.parse(localStorage.getItem('skillhub_videos')) || [];
+
+    const assignments = JSON.parse(localStorage.getItem('lms_assignments')) || [];
+
+    // 2. Fetch Material Count (Prioritize IndexedDB, fallback to LocalStorage)
+    let materialCount = 0;
+    try {
+        materialCount = await getIndexedDBCount();
+    } catch (e) {
+        const localMats = JSON.parse(localStorage.getItem('lms_materials')) || 
+                          JSON.parse(localStorage.getItem('skillhub_materials')) || [];
+        materialCount = localMats.length;
+    }
+
+    // 3. Filter User Roles
+    const studentCount = users.filter(u => u.role === 'student').length;
+    const trainerCount = users.filter(u => u.role === 'trainer').length;
+
+    // 4. Update UI Elements safely
+    updateElement('stat-students', studentCount);
+    updateElement('stat-trainers', trainerCount);
+    updateElement('stat-courses', courses.length);
+    updateElement('stat-materials', materialCount);
+    updateElement('stat-videos', videos.length);
+    updateElement('stat-assignments', assignments.length);
+
+    // 5. Update the Analytics Chart
+    renderChart(studentCount, trainerCount);
+}
+
+/**
+ * Helper: Safely update innerText of an ID if it exists
+ */
+function updateElement(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+}
+
+/**
+ * Helper: Fetch count from IndexedDB
+ */
+function getIndexedDBCount() {
+    return new Promise((resolve) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onsuccess = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) return resolve(0);
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const countReq = store.count();
+            countReq.onsuccess = () => resolve(countReq.result);
+        };
+        request.onerror = () => resolve(0);
+    });
+}
+
+/**
+ * Chart.js Logic
+ */
+let myChart;
+function renderChart(students, trainers) {
+    const canvas = document.getElementById('userChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    if (myChart) myChart.destroy();
+
+    const isEmpty = (students === 0 && trainers === 0);
+    const dataPoints = isEmpty ? [1, 1] : [students, trainers];
+    const bgColors = isEmpty ? ['#e2e8f0', '#cbd5e1'] : ['#4f46e5', '#38bdf8'];
+
+    myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Students', 'Trainers'],
+            datasets: [{
+                data: dataPoints,
+                backgroundColor: bgColors,
+                borderWidth: 0
+            }]
+        },
+        options: { 
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+}
+
+/**
+ * System Actions
+ */
+function resetData() {
+    if(confirm("Are you sure? This deletes ALL users, courses, and large files.")) {
+        localStorage.clear();
+        indexedDB.deleteDatabase(DB_NAME);
+        location.reload();
+    }
+}
+
+function addGradingNotification(studentName, assignmentTitle) {
+    if(!studentName) return;
+    let notifications = JSON.parse(localStorage.getItem('lms_notifications')) || [];
+    notifications.push({
+        to: studentName,
+        message: `Your assignment '${assignmentTitle}' has been graded!`,
+        date: new Date().toLocaleString()
+    });
+    localStorage.setItem('lms_notifications', JSON.stringify(notifications));
+}
+
+// Ensure it runs once when the page is ready
+document.addEventListener('DOMContentLoaded', updateDashboard);
+</script>
+
+</body>
+</html>

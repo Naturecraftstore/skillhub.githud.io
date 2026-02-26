@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Live Session | Skill Hub Trainer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      /* Brand Palette */
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-soft: #f0f2ff;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      /* Layout & Surface */
+      --bg: #f8fafc;
+      --white: #ffffff;
+      --sidebar-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      /* Shadows & Effects */
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0; background: var(--bg); color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* --- TOP NAVIGATION --- */
+    .top-nav {
+      position: fixed; top: 0; width: 100%; height: 70px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem; z-index: 1000;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .logo-section { display: flex; align-items: center; gap: 15px; }
+    #sidebarToggle { cursor: pointer; font-size: 1.2rem; color: var(--text-muted); padding: 5px; }
+    #sidebarToggle:hover { color: var(--primary); }
+    
+    .logo-icon img { height: 35px; border-radius: 8px; }
+    .logo-text { font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .top-link { color: var(--text-muted); font-size: 1.1rem; text-decoration: none; position: relative; }
+    .top-link .badge { position: absolute; top: -5px; right: -8px; background: var(--danger); color: white; padding: 2px 5px; font-size: 10px; border-radius: 50%; }
+
+    .logout-btn {
+      background: #fee2e2; color: #dc2626; padding: 8px 16px;
+      border-radius: var(--radius-md); text-decoration: none;
+      font-weight: 600; font-size: 0.9rem;
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: var(--sidebar-width); height: calc(100vh - 70px);
+      background: var(--sidebar-bg);
+      position: fixed; left: 0; top: 70px;
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      z-index: 999;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 15px;
+      text-decoration: none; color: var(--text-muted); border-radius: var(--radius-md);
+      margin-bottom: 5px; font-weight: 500;
+    }
+
+    .nav-item:hover { background: var(--primary-soft); color: var(--primary); transform: translateX(5px); }
+    .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+
+    /* --- CONTENT AREA --- */
+    .content-area {
+      margin-left: var(--sidebar-width);
+      padding: 3rem 2rem;
+      padding-top: calc(70px + 2rem);
+      max-width: 1200px;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* --- TOGGLE STATES --- */
+    .sidebar.collapsed { transform: translateX(-100%); }
+    .content-area.expanded { margin-left: 0; }
+
+    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 1.5rem; }
+    h3 { font-size: 1.3rem; font-weight: 700; margin-top: 2rem; color: var(--text-main); }
+
+    /* Scheduling Card */
+    .card {
+      background: var(--white); padding: 2.5rem; border-radius: var(--radius-lg);
+      border: 1px solid var(--border); box-shadow: var(--shadow-md);
+      margin-bottom: 30px;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 1rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
+    input, select, textarea { width: 100%; padding: 12px 15px; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; outline: none; font-family: inherit; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
+
+    .btn-schedule {
+      background: var(--primary); color: white; border: none; padding: 16px;
+      border-radius: var(--radius-md); font-weight: 700; cursor: pointer;
+      width: 100%; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-schedule:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
+
+    /* Table UI */
+    .table-container { background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 15px; background: #f1f5f9; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { padding: 15px; border-bottom: 1px solid var(--border); }
+    .badge-course { background: var(--primary-soft); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
+    .btn-delete { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.1rem; }
+    .btn-delete:hover { transform: scale(1.2); }
+
+    @media (max-width: 992px) {
+      .sidebar { width: 100%; max-width: 260px; transform: translateX(-100%); }
+      .sidebar:not(.collapsed) { transform: translateX(0); }
+      .content-area { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="logo-section">
+      <i class="fas fa-bars" id="sidebarToggle"></i>
+      <div class="logo-icon"><a href="trainer_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+      <span class="logo-text">Skill Hub</span>
+    </div>
+    <div class="nav-right">
+      <a href="notifications.html" class="top-link" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="badge" id="notifBadge">0</span>
+      </a>
+      <a href="messages.html" class="top-link" title="Chat"><i class="fas fa-comment-dots"></i></a>
+      <a href="trainer_profile.html" class="top-link" id="navTrainerDisplay"><i class="fas fa-user-circle"></i></a>
+      <a href="index.html" class="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <nav>
+        <a href="trainer_dashboard.html" class="nav-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a href="trainer_grading.html" class="nav-item"><i class="fas fa-check-double"></i> <span>Grading</span></a>
+        <a href="trainer_add_assignment.html" class="nav-item"><i class="fas fa-tasks"></i> <span>Assignments</span></a>
+        <a href="trainer_add_video.html" class="nav-item"><i class="fas fa-video"></i> <span>Videos</span></a>
+        <a href="trainer_add_material.html" class="nav-item"><i class="fas fa-file-upload"></i> <span>Materials</span></a>
+        <a href="trainer_add_session.html" class="nav-item active"><i class="fas fa-calendar-alt"></i> <span>Live Sessions</span></a>
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+        <a href="contact.html" class="nav-item"><i class="fas fa-question-circle"></i> <span>Help Desk</span></a>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <h1><i class="fas fa-video"></i> Schedule a Live Class</h1>
+      
+      <div class="card">
+        <form id="sessionForm">
+          <div class="form-group">
+            <label>Topic / Title</label>
+            <input type="text" id="sTitle" placeholder="e.g. Weekly Q&A - Advanced JavaScript" required>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Target Course</label>
+              <select id="sCourse" required>
+                <option value="">-- Select Course --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Meeting Link (Zoom/Meet)</label>
+              <input type="url" id="sLink" placeholder="https://zoom.us/j/..." required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="sDate" required>
+            </div>
+            <div class="form-group">
+              <label>Time</label>
+              <input type="time" id="sTime" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Agenda / Description</label>
+            <textarea id="sDesc" placeholder="What will be covered in this session?" rows="2"></textarea>
+          </div>
+
+          <button type="submit" class="btn-schedule">
+            <i class="fas fa-calendar-plus"></i> Broadcast Session & Notify Students
+          </button>
+        </form>
+      </div>
+
+      <h3>Your Scheduled Sessions</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Course & Title</th>
+              <th>Date & Time</th>
+              <th>Meeting</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sessionTableBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Configuration Keys (Sync with Admin/Student)
+    const SESS_KEY = 'skillhub_sessions';
+    const COURSE_KEY = 'skillhub_courses';
+    const USER_KEY = 'skillhub_users';
+    const NOTIF_KEY = 'lms_notifications';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sidebar Toggle
+      const toggle = document.getElementById('sidebarToggle');
+      const sidebar = document.querySelector('.sidebar');
+      const content = document.querySelector('.content-area');
+
+      toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('expanded');
+      });
+
+      loadCourses();
+      renderSessions();
+    });
+
+    // 1. Populate Courses Dropdown
+    function loadCourses() {
+      const courses = JSON.parse(localStorage.getItem(COURSE_KEY)) || [];
+      const select = document.getElementById('sCourse');
+      courses.forEach(c => {
+        const name = typeof c === 'object' ? (c.name || c.title) : c;
+        if(name) select.innerHTML += `<option value="${name}">${name}</option>`;
+      });
+    }
+
+    // 2. Handle Form Submission
+    document.getElementById('sessionForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const sessionUser = JSON.parse(localStorage.getItem('active_session') || '{}');
+      const course = document.getElementById('sCourse').value;
+      const title = document.getElementById('sTitle').value;
+      const date = document.getElementById('sDate').value;
+      const time = document.getElementById('sTime').value;
+
+      const newSession = {
+        id: Date.now(),
+        title: title,
+        course: course,
+        date: date,
+        time: time,
+        link: document.getElementById('sLink').value,
+        description: document.getElementById('sDesc').value,
+        trainer: sessionUser.name || 'Trainer'
+      };
+
+      // Save Session
+      const sessions = JSON.parse(localStorage.getItem(SESS_KEY)) || [];
+      sessions.push(newSession);
+      localStorage.setItem(SESS_KEY, JSON.stringify(sessions));
+
+      // Send Notifications to Students in this specific course
+      sendNotifications(course, title, date);
+
+      alert("Live session scheduled and broadcasted!");
+      e.target.reset();
+      renderSessions();
+    });
+
+    // 3. Notification Logic
+    function sendNotifications(courseName, title, date) {
+      const users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+      const notifs = JSON.parse(localStorage.getItem(NOTIF_KEY)) || [];
+      
+      // Filter students who are in the selected course
+      users.filter(u => u.course === courseName).forEach(u => {
+        notifs.push({
+          id: Date.now() + Math.random(),
+          studentEmail: u.username,
+          title: "New Live Session Scheduled",
+          message: `Topic: ${title} is scheduled for ${date}. Check the Sessions tab.`,
+          date: new Date().toLocaleString(),
+          read: false
+        });
+      });
+      localStorage.setItem(NOTIF_KEY, JSON.stringify(notifs));
+    }
+
+    // 4. Render Table
+    function renderSessions() {
+      const sessions = JSON.parse(localStorage.getItem(SESS_KEY)) || [];
+      const tbody = document.getElementById('sessionTableBody');
+      const sessionUser = JSON.parse(localStorage.getItem('active_session') || '{}');
+
+      // Only show sessions scheduled by this specific trainer
+      const mySessions = sessions.filter(s => s.trainer === (sessionUser.name || 'Trainer'));
+
+      if (mySessions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:30px;">No sessions found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = mySessions.map(s => `
+        <tr>
+          <td>
+            <span class="badge-course">${s.course}</span><br>
+            <strong style="display:block; margin-top:5px;">${s.title}</strong>
+          </td>
+          <td>
+            <i class="far fa-calendar-alt"></i> ${s.date}<br>
+            <i class="far fa-clock"></i> ${s.time}
+          </td>
+          <td>
+            <a href="${s.link}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none;">
+              Join <i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i>
+            </a>
+          </td>
+          <td>
+            <button class="btn-delete" onclick="deleteSession(${s.id})">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 5. Delete Session
+    function deleteSession(id) {
+      if(confirm("Are you sure you want to cancel this session?")) {
+        let sessions = JSON.parse(localStorage.getItem(SESS_KEY));
+        sessions = sessions.filter(s => s.id !== id);
+        localStorage.setItem(SESS_KEY, JSON.stringify(sessions));
+        renderSessions();
+      }
+    }
+  </script>
+</body>
+</html>

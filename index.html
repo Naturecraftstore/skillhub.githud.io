@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Skill Hub | Learn. Build. Grow.</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --secondary: #38bdf8; --dark: #0f172a; 
+       
+    }
+
+    /* ================= BACKGROUND LOGO FIX ================= */
+    body { 
+      font-family: 'Inter', sans-serif; 
+      margin: 0; 
+      color: var(--dark); 
+      line-height: 1.6;
+      background-color: #f8fafc; /* Base color */
+      
+      /* The Logo */
+      background-image: url('image.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      background-size: 75%; /* Adjust size here */
+    }
+
+    /* This overlay ensures the logo looks like a watermark and text is readable */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(248, 250, 252, 0.92); /* Adjust transparency here */
+      z-index: -1; 
+    }
+
+    /* Header & Nav */
+    header { 
+   
+      backdrop-filter: blur(10px);
+      padding: 15px 10%; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: sticky; 
+      top: 0; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+      z-index: 1000; 
+    }
+    
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo-icon img { width: 45px; height: 45px; object-fit: contain; }
+    .logo-text { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+
+    .nav-links a { text-decoration: none; color: var(--dark); font-weight: 500; margin-left: 30px; transition: 0.3s; }
+    .btn-login { background: var(--primary); color: white !important; padding: 10px 25px; border-radius: 8px; }
+
+    /* ================= SECTION GLASSMORPHISM ================= */
+    /* We use transparent backgrounds so the watermark logo is visible through them */
+    
+    .hero { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 100px 10%; 
+      background: rgba(248, 250, 252, 0.4); /* Transparent */
+    }
+    
+    .hero-content { max-width: 600px; }
+    .hero-content h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; }
+    .hero-content p { font-size: 1.2rem; color: var(--text-gray); margin-bottom: 30px; }
+    
+    .hero-btns { display: flex; gap: 15px; }
+    .btn { padding: 15px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; transition: 0.3s; }
+    .btn-p { background: var(--primary); color: white; }
+    .btn-s { border: 2px solid var(--primary); color: var(--primary); }
+
+    .features { padding: 80px 10%; text-align: center; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 50px; }
+    
+    .f-card { 
+      padding: 40px; 
+      border-radius: 16px; 
+      background: rgba(255, 255, 255, 0.6); /* Translucent white */
+      border: 1px solid rgba(226, 232, 240, 0.5); 
+      transition: 0.3s; 
+      backdrop-filter: blur(4px); /* Blur behind the card */
+    }
+    .f-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.9); }
+    .f-card i { font-size: 2.5rem; color: var(--secondary); margin-bottom: 20px; }
+
+    footer { background: var(--dark); color: white; padding: 50px 10%; text-align: center; position: relative; }
+    
+    @media (max-width: 768px) {
+      .hero { flex-direction: column; text-align: center; padding: 50px 5%; }
+      .hero-content h1 { font-size: 2.5rem; }
+      .hero-btns { justify-content: center; }
+      body { background-size: 60%; } /* Bigger watermark on mobile */
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="#" class="logo">
+      <div class="logo-icon"><img src="image.png" alt="Skill Hub Logo"></div>
+      <span class="logo-text">Skill Hub</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="login.html">Courses</a>
+      <a href="admin_singup.html">Signup</a>
+      <a href="login.html" class="btn-login">Login</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Master New Skills with Expert Training</h1>
+      <p>Skill Hub is a complete learning ecosystem designed for students, trainers, and admins. Watch lessons, submit assignments, and track your progress in real-time.</p>
+      <div class="hero-btns">
+        <a href="login.html" class="btn btn-p">Get Started Free</a>
+        <a href="#features" class="btn btn-s">Learn More</a>
+      </div>
+    </div>
+    <div class="hero-img">
+        <i class="fas fa-laptop-code" style="font-size: 15rem; color: var(--primary); opacity: 0.1;"></i>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <h2>Why Choose Skill Hub?</h2>
+    <div class="feature-grid">
+      <div class="f-card">
+        <i class="fas fa-video"></i>
+        <h3>Video Lessons</h3>
+        <p>Access high-quality video content from industry experts anytime, anywhere.</p>
+      </div>
+      <div class="f-card">
+        <i class="fas fa-tasks"></i>
+        <h3>Live Grading</h3>
+        <p>Get instant feedback on your assignments from your assigned trainers.</p>
+      </div>
+      <div class="f-card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Track Progress</h3>
+        <p>Visual charts and analytics to keep you motivated throughout your journey.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="logo" style="justify-content: center; margin-bottom: 20px; color: white;">
+        <i class="fas fa-graduation-cap"></i> <span style="margin-left:10px">Skill Hub</span>
+    </div>
+    <p>&copy; 2026 Skill Hub LMS. All rights reserved.</p>
+    <div style="margin-top: 20px;">
+        <a href="#" style="color:white; margin: 0 10px;"><i class="fab fa-twitter"></i></a>
+        <a href="#" style="color:white; margin: 0 10px;"><i class="fab fa-linkedin"></i></a>
+        <a href="#" style="color:white; margin: 0 10px;"><i class="fab fa-github"></i></a>
+    </div>
+  </footer>
+
+</body>
+</html>

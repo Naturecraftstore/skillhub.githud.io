@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Skill Hub Student</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --secondary: #38bdf8; --bg: #f8fafc; 
+      --text: #1e293b; --white: #ffffff; --border: #e2e8f0;
+      --accent: #818cf8;
+    }
+
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    .top-nav {
+      position: fixed; top: 0; width: 100%; background: var(--primary);
+      padding: 0.7rem 2rem; z-index: 1000; display: flex;
+      justify-content: space-between; align-items: center; box-sizing: border-box;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: #fff; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { color: #ffffff; font-size: 1.2rem; font-weight: 600; }
+
+    .app-container { display: flex; padding-top: 65px; }
+    .sidebar { 
+      width: 240px; height: calc(100vh - 65px); background: white; 
+      position: fixed; left: 0; border-right: 1px solid var(--border); 
+      padding: 1rem; box-sizing: border-box;
+    }
+    .nav-item { 
+      display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+      text-decoration: none; color: var(--text); border-radius: 8px; margin-bottom: 5px;
+      transition: 0.3s;
+    }
+    .nav-item:hover { background: #f1f5f9; }
+    .nav-item.active { background: var(--primary); color: white; }
+
+    .content { margin-left: 240px; flex: 1; padding: 2.5rem; }
+
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white; padding: 40px; border-radius: 20px;
+      margin-bottom: 30px; position: relative; overflow: hidden;
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+    }
+    .welcome-banner h1 { margin: 0; font-size: 2.2rem; }
+    .welcome-banner p { opacity: 0.95; margin: 15px 0 0; font-size: 1.1rem; line-height: 1.5; }
+    .banner-img { position: absolute; right: 40px; bottom: -10px; font-size: 8rem; opacity: 0.1; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .stat-card {
+      background: white; padding: 25px; border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex;
+      align-items: center; gap: 20px; border: 1px solid var(--border);
+    }
+    .stat-icon {
+      width: 50px; height: 50px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    }
+
+    .dashboard-sections { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 30px; }
+    .section-card { background: white; padding: 25px; border-radius: 16px; border: 1px solid var(--border); }
+    .item-row { 
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 15px 0; border-bottom: 1px solid #f1f5f9;
+    }
+    .item-row:last-child { border: none; }
+
+    .notification-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .notification-item:last-child { border: none; }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <div class="logo-icon"><img src="image.png" alt="Logo"></div>
+      <span class="logo-text">Skill Hub <small style="font-weight: 400; opacity: 0.8;">| Student</small></span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <nav>
+        <a href="student_dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="student_courses.html" class="nav-item"><i class="fas fa-book"></i> My Courses</a>
+        <a href="student_materials.html" class="nav-item"><i class="fas fa-folder-open"></i> Materials</a>
+        <a href="student_videos.html" class="nav-item"><i class="fas fa-play-circle"></i> Video Lessons</a>
+        <a href="student_assignments.html" class="nav-item active"><i class="fas fa-tasks"></i> Assignments</a>
+        <a href="student_sessions.html" class="nav-item"><i class="fas fa-calendar-alt"></i> <span>Live Sessions</span></a>
+        <a href="student_results.html" class="nav-item"><i class="fas fa-poll-h"></i> My Results</a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="contact.html" class="nav-item"><i class="fas fa-envelope"></i> Contact Us</a>
+        <a href="notifications.html" class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="index.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="welcome-banner">
+        <h1>Welcome back, <span id="studentName">Student</span>!</h1>
+        <p>Loading your progress details...</p>
+        <i class="fas fa-user-graduate banner-img"></i>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #eef2ff; color: var(--primary);"><i class="fas fa-clock"></i></div>
+          <div><h3 style="margin:0;" id="pendingCount">0</h3><p style="margin:0; font-size: 0.85rem; color: #64748b;">Pending Tasks</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #eef2ff; color: var(--primary);"><i class="fas fa-book-open"></i></div>
+          <div><h3 style="margin:0;" id="courseCount">0</h3><p style="margin:0; font-size: 0.85rem; color: #64748b;">Enrolled Courses</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #f0fdf4; color: #10b981;"><i class="fas fa-check-circle"></i></div>
+          <div><h3 style="margin:0;" id="completedCount">0</h3><p style="margin:0; font-size: 0.85rem; color: #64748b;">Submitted Tasks</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fff7ed; color: #f59e0b;"><i class="fas fa-star"></i></div>
+          <div><h3 style="margin:0;" id="avgGrade">N/A</h3><p style="margin:0; font-size: 0.85rem; color: #64748b;">Average Grade</p></div>
+        </div>
+      </div>
+
+      <div class="dashboard-sections">
+        <div class="section-card">
+          <h3 style="margin-top:0;"><i class="fas fa-bolt" style="color: #f59e0b;"></i> Recent Assignments</h3>
+          <div id="recentAssignments"></div>
+        </div>
+        
+        <div class="section-card">
+          <h3 style="margin-top:0;"><i class="fas fa-bell" style="color: var(--primary);"></i> Notifications</h3>
+          <div id="notificationList"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Check Session
+      const sessionUser = JSON.parse(localStorage.getItem('active_session'));
+      if (!sessionUser || sessionUser.role !== 'student') { 
+        window.location.href = 'index.html'; 
+        return; 
+      }
+
+      // 2. Refresh Student Data from Master List
+      const allUsers = JSON.parse(localStorage.getItem('skillhub_users')) || [];
+      const currentUser = allUsers.find(u => u.username === sessionUser.username) || sessionUser;
+
+      // 3. Update Banner UI
+      document.getElementById('studentName').innerText = currentUser.name;
+      const banner = document.querySelector('.welcome-banner p');
+      const trainerName = currentUser.trainer || "Not yet assigned";
+      banner.innerHTML = `Course: <strong>${currentUser.course || 'General'}</strong> | Trainer: <strong>${trainerName}</strong><br>Keep up the great work!`;
+
+      // 4. Calculate Stats
+      const allAssignments = JSON.parse(localStorage.getItem('lms_assignments')) || [];
+      const allSubmissions = JSON.parse(localStorage.getItem('lms_submissions')) || [];
+      const mySubmissions = allSubmissions.filter(s => s.studentEmail === currentUser.username);
+      const myGraded = mySubmissions.filter(s => s.status === 'Graded');
+
+      document.getElementById('pendingCount').innerText = allAssignments.length - mySubmissions.length;
+      document.getElementById('courseCount').innerText = currentUser.course ? 1 : 0;
+      document.getElementById('completedCount').innerText = mySubmissions.length;
+
+      // 5. Average Grade Logic
+      if(myGraded.length > 0) {
+        const total = myGraded.reduce((acc, curr) => acc + parseInt(curr.score || 0), 0);
+        document.getElementById('avgGrade').innerText = Math.round(total / myGraded.length) + "%";
+      }
+
+      // 6. Recent Assignments
+      const assignmentList = document.getElementById('recentAssignments');
+      const recent = allAssignments.slice(-3).reverse();
+      assignmentList.innerHTML = recent.map(as => `
+        <div class="item-row">
+          <div>
+            <div style="font-weight:600;">${as.title}</div>
+            <div style="font-size: 0.8rem; color:#64748b;">Due: ${as.dueDate}</div>
+          </div>
+          <a href="student_assignments.html" style="color:var(--primary); font-size:0.8rem; font-weight:600; text-decoration:none;">View Task</a>
+        </div>
+      `).join('') || '<p style="color:#94a3b8; padding:10px;">No assignments found.</p>';
+
+      // 7. Notifications
+      const noteList = document.getElementById('notificationList');
+      const allNotes = JSON.parse(localStorage.getItem('lms_notifications')) || [];
+      const myNotes = allNotes.filter(n => n.studentEmail === currentUser.username).slice(-4).reverse();
+
+      noteList.innerHTML = myNotes.map(n => `
+        <div class="notification-item">
+          <div style="color:var(--primary); font-weight:600; font-size:0.85rem;">${n.title || 'Update'}</div>
+          <div style="font-size:0.85rem; color:#475569; margin-top:2px;">${n.message}</div>
+          <div style="font-size:0.75rem; color:#94a3b8; margin-top:5px;"><i class="far fa-clock"></i> ${n.date}</div>
+        </div>
+      `).join('') || '<p style="color:#94a3b8; font-size:0.9rem; padding:10px;">No new notifications.</p>';
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+    const user = JSON.parse(localStorage.getItem('active_session'));
+    // ... (your existing code for stats and assignments) ...
+
+    // --- ADD THE NOTIFICATION BADGE LOGIC HERE ---
+    const allNotifications = JSON.parse(localStorage.getItem('lms_notifications')) || [];
+    
+    // For students, we filter by their email
+    const unread = allNotifications.filter(n => n.studentEmail === user.username && !n.read).length;
+
+    if (unread > 0) {
+        const navItem = document.querySelector('a[href="notifications.html"]');
+        if (navItem) {
+            const badge = document.createElement('span');
+            // Styled to look like a small red bubble
+            badge.style.cssText = "background:#ef4444; color:white; border-radius:10px; padding:2px 8px; font-size:11px; margin-left:auto; font-weight:bold; display:inline-block;";
+            badge.innerText = unread;
+            navItem.appendChild(badge);
+        }
+    }
+});
+  </script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courses | Skill Hub Admin</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+   /* ================= ROOT VARIABLES ================= */
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --bg-main: #f1f5f9;
+  --sidebar-dark: #0f172a;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --white: #ffffff;
+  --border: #e2e8f0;
+  --accent: #38bdf8;
+  --danger: #ef4444;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* ================= BASE ================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-main);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* ================= TOP NAV ================= */
+.top-nav {
+  background: var(--primary);
+  color: white;
+  height: 65px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.logo-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.top-nav-links a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  margin-left: 18px;
+  font-size: 0.9rem;
+  transition: 0.3s ease;
+}
+
+.top-nav-links a:hover {
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ================= LAYOUT ================= */
+.app-body {
+  display: flex;
+  min-height: calc(100vh - 65px);
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 250px;
+  background: var(--sidebar-dark);
+  padding-top: 25px;
+  color: white;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 25px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: white;
+}
+
+.nav-item.active {
+  background: rgba(79, 70, 229, 0.15);
+  border-left: 4px solid var(--accent);
+  color: var(--accent);
+}
+
+/* ================= CONTENT AREA ================= */
+.content-area {
+  flex: 1;
+  padding: 40px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.page-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* ================= CARD ================= */
+.card,
+.form-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid var(--border);
+}
+
+.form-card {
+  display: none;
+}
+
+.form-card.show {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ================= INPUTS ================= */
+input,
+textarea {
+  width: 100%;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  transition: 0.3s ease;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+#searchInput {
+  width: 350px;
+  border-radius: 50px;
+  padding-left: 20px;
+}
+
+/* ================= TABLE ================= */
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table th {
+  background: #f8fafc;
+  padding: 15px 20px;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border);
+}
+
+.dashboard-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-table tr:hover td {
+  background: #f9fafb;
+}
+
+/* ================= BUTTONS ================= */
+.btn-add {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 11px 22px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.3s ease;
+}
+
+.btn-add:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.cancel-btn {
+  background: #94a3b8;
+}
+
+.cancel-btn:hover {
+  background: #64748b;
+}
+
+.actions button {
+  border: none;
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 6px;
+  border-radius: 6px;
+  transition: 0.2s ease;
+}
+
+.actions button:hover {
+  background: #fee2e2;
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 80px;
+  }
+  .sidebar span {
+    display: none;
+  }
+  .nav-item {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .content-area {
+    padding: 20px;
+  }
+
+  #searchInput {
+    width: 100%;
+  }
+}
+  </style>
+</head>
+
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <a href="admin_dashboard.html"><img src="image.png" alt="Skill Hub Logo"></a>
+      <span class="logo-text">Skill Hub</span>
+    </div>
+
+    <nav class="top-nav-links">
+      <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="messages.html" ><i class="fas fa-comments"></i> User Chat</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i></a>
+        <a href="setting.html"><i class="fas fa-cog"></i> Settings</a></a>
+        <a href="admin_profile.html">profile</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </nav>
+  </header>
+
+  <div class="app-body">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="admin_dashboard.html" class="nav-item active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+      <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+      <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Trainers</span></a>
+      <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+      <a href="materials.html" class="nav-item"><i class="fas fa-book-open"></i><span>Materials</span></a>
+      <a href="videos.html" class="nav-item"><i class="fas fa-video"></i><span>Videos</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+      <a href="sessions.html" class="nav-item"><i class="fas fa-calendar-plus"></i><span>Sessions</span></a>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <div class="page-header">
+        <h1>Course Management</h1>
+        <button class="btn-add" onclick="toggleCourseForm()"><i class="fas fa-plus"></i> Add New Course</button>
+      </div>
+
+      <div id="addCourseForm" class="form-card">
+        <h3>Create New Curriculum</h3>
+        <input type="text" id="courseTitle" placeholder="Course Title (e.g., Python Full Stack)">
+        <textarea id="courseDesc" placeholder="Brief Course Overview" rows="3"></textarea>
+        <div>
+          <button class="btn-add" onclick="saveCourse()">Save Course</button>
+          <button class="btn-add cancel-btn" onclick="toggleCourseForm()">Cancel</button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-start;">
+        <input type="text" id="searchInput" placeholder="Search courses..." onkeyup="searchCourses()">
+      </div>
+
+      <div class="card">
+        <table class="dashboard-table" id="courseTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Course Title</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="courseBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+<script>
+// CRITICAL: Key names used by Students and Trainers pages
+const STORAGE_KEY = 'skillhub_courses_detailed'; // For the table in this page
+const SIMPLE_COURSE_KEY = 'skillhub_courses';    // For dropdowns in other pages
+
+// 1. Load Data
+function renderCourses() {
+  const courses = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  const tbody = document.getElementById('courseBody');
+  
+  if (courses.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No courses found. Add one above!</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = courses.map(c => `
+    <tr>
+      <td><span style="color: #6366f1; font-weight: bold;">#${c.id}</span></td>
+      <td><strong>${c.title}</strong></td>
+      <td style="color: #64748b; font-size: 0.9rem;">${c.description}</td>
+      <td class="actions">
+        <button onclick="deleteCourse('${c.title}')" title="Delete Course">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// 2. Save Logic
+function saveCourse() {
+  const title = document.getElementById('courseTitle').value.trim();
+  const desc = document.getElementById('courseDesc').value.trim();
+
+  if (!title || !desc) return alert("Please fill all fields");
+
+  // Update Detailed Storage (for this table)
+  const detailedCourses = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  if(detailedCourses.some(c => c.title.toLowerCase() === title.toLowerCase())) {
+      return alert("This course already exists!");
+  }
+
+  detailedCourses.push({
+    id: Math.floor(Math.random() * 900) + 100,
+    title: title,
+    description: desc
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(detailedCourses));
+
+  // Update Simple Storage (This is what the Trainers/Students pages look for)
+  const simpleCourses = JSON.parse(localStorage.getItem(SIMPLE_COURSE_KEY)) || [];
+  simpleCourses.push(title);
+  localStorage.setItem(SIMPLE_COURSE_KEY, JSON.stringify(simpleCourses));
+  
+  // Reset UI
+  document.getElementById('courseTitle').value = '';
+  document.getElementById('courseDesc').value = '';
+  toggleCourseForm();
+  renderCourses();
+}
+
+// 3. Delete Logic
+function deleteCourse(title) {
+  if (confirm(`Delete "${title}"? This will remove it from Trainer and Student options.`)) {
+    // Remove from Detailed
+    const detailed = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(detailed.filter(c => c.title !== title)));
+
+    // Remove from Simple (for dropdowns)
+    const simple = JSON.parse(localStorage.getItem(SIMPLE_COURSE_KEY)) || [];
+    localStorage.setItem(SIMPLE_COURSE_KEY, JSON.stringify(simple.filter(c => c !== title)));
+
+    renderCourses();
+  }
+}
+
+function toggleCourseForm() {
+  document.getElementById("addCourseForm").classList.toggle("show");
+}
+
+function searchCourses() {
+  const value = document.getElementById("searchInput").value.toLowerCase();
+  document.querySelectorAll("#courseBody tr").forEach(row => {
+    row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+  });
+}
+
+function logout() { localStorage.removeItem('active_session'); }
+
+document.addEventListener('DOMContentLoaded', renderCourses);
+// Load Courses into Dropdown
+function loadCourses() {
+    const courses = JSON.parse(localStorage.getItem(COURSE_KEY)) || [];
+    const select = document.getElementById('targetCourse');
+    
+    // Clear existing options except the first one
+    select.innerHTML = '<option value="">Select Course</option>';
+
+    courses.forEach(c => {
+        const opt = document.createElement('option');
+        
+        // FAIL-SAFE: Check if 'c' is an object or a string
+        if (typeof c === 'object' && c !== null) {
+            // Use .name or .title or .courseName based on what your courses.html saves
+            const courseName = c.name || c.title || c.courseName; 
+            opt.value = courseName;
+            opt.textContent = courseName;
+        } else {
+            // It's just a string
+            opt.value = c;
+            opt.textContent = c;
+        }
+        
+        if (opt.value) { // Only add if we found a value
+            select.appendChild(opt);
+        }
+    });
+}
+</script>
+
+</body>
+</html>

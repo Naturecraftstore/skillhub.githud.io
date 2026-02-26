@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Courses | Skill Hub Student</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --bg: #f8fafc; --text: #1e293b; 
+      --white: #ffffff; --border: #e2e8f0; --secondary: #38bdf8;
+    }
+
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    .top-nav {
+      position: fixed; top: 0; width: 100%; background: var(--primary);
+      padding: 0.7rem 2rem; z-index: 1000; display: flex;
+      justify-content: space-between; align-items: center; box-sizing: border-box;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: #fff; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { color: #ffffff; font-size: 1.2rem; font-weight: 600; }
+
+    .app-container { display: flex; padding-top: 65px; }
+    .sidebar { 
+      width: 240px; height: calc(100vh - 65px); background: white; 
+      position: fixed; left: 0; border-right: 1px solid var(--border); 
+      padding: 1rem; box-sizing: border-box;
+    }
+    .nav-item { 
+      display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+      text-decoration: none; color: var(--text); border-radius: 8px; margin-bottom: 5px;
+    }
+    .nav-item.active { background: var(--primary); color: white; }
+
+    .content { margin-left: 240px; flex: 1; padding: 2rem; }
+
+    /* Course Grid */
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 20px; }
+    
+    .course-card {
+      background: var(--white); border-radius: 15px; overflow: hidden;
+      border: 1px solid var(--border); transition: 0.3s;
+      display: flex; flex-direction: column;
+    }
+    .course-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    
+    .course-banner {
+      height: 140px; background: linear-gradient(45deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;
+    }
+
+    .course-body { padding: 20px; flex-grow: 1; }
+    .course-category { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--secondary); margin-bottom: 8px; }
+    .course-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0; color: var(--text); }
+    
+    .course-meta { font-size: 0.85rem; color: #64748b; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+
+    .progress-container { background: #e2e8f0; height: 8px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+    .progress-bar { height: 100%; background: var(--primary); border-radius: 10px; }
+
+    .btn-enter {
+      display: block; width: 100%; padding: 10px; background: #f1f5f9;
+      color: var(--primary); text-align: center; text-decoration: none;
+      font-weight: 600; border-radius: 8px; transition: 0.2s;
+    }
+    .btn-enter:hover { background: var(--primary); color: white; }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <div class="logo-icon"><a href="student_dashboard.html"><img src="image.png" alt="Logo"></a>
+      </div>
+      <span class="logo-text">Skill Hub <small>| Student</small></span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <nav>
+        <a href="student_dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="student_courses.html" class="nav-item"><i class="fas fa-book"></i> My Courses</a>
+        <a href="student_materials.html" class="nav-item"><i class="fas fa-folder-open"></i> Materials</a>
+        <a href="student_videos.html" class="nav-item"><i class="fas fa-play-circle"></i> Video Lessons</a>
+        <a href="student_assignments.html" class="nav-item active"><i class="fas fa-tasks"></i> Assignments</a>
+        <a href="student_sessions.html" class="nav-item"><i class="fas fa-calendar-alt"></i> <span>Live Sessions</span></a>
+        <a href="student_results.html" class="nav-item"><i class="fas fa-poll-h"></i> My Results</a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="contact.html" class="nav-item"><i class="fas fa-envelope"></i> Contact Us</a>
+        <a href="notifications.html" class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="index.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="section-header">
+        <h1>My Learning Path</h1>
+        <p style="color: #64748b;">All courses currently assigned to your profile.</p>
+      </div>
+
+      <div class="course-grid" id="courseList">
+        </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  // 1. Get current student info from the login session
+  const user = JSON.parse(localStorage.getItem('active_session'));
+  if (!user) { 
+    window.location.href = 'login.html'; 
+    return; 
+  }
+
+  // 2. Fetch DETAILED courses from the system
+  // We use 'skillhub_courses_detailed' because that stores the ID, Title, and Description
+  const allDetailedCourses = JSON.parse(localStorage.getItem('skillhub_courses_detailed')) || [];
+  
+  // 3. Filter to find the specific course assigned to this student
+  // We match the 'user.course' (the name) against the 'c.title' in the detailed list
+  const enrolledCourses = allDetailedCourses.filter(c => c.title === user.course);
+
+  const container = document.getElementById('courseList');
+
+  // Handle case where student has no course assigned
+  if (enrolledCourses.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1/-1; text-align:center; padding: 50px; background:white; border-radius:15px; border: 1px solid var(--border);">
+        <i class="fas fa-book-reader" style="font-size: 3rem; color: #e2e8f0; margin-bottom: 15px;"></i>
+        <h3>No Enrolled Courses</h3>
+        <p style="color: #94a3b8;">You are not currently enrolled in any curriculum.<br>Please contact your Admin to be assigned to a course.</p>
+      </div>`;
+    return;
+  }
+
+  // 4. Render the detailed information
+  container.innerHTML = enrolledCourses.map(c => {
+    // Progress calculation (fallback to 0 if not found)
+    const progress = user.progress || 0; 
+    
+    return `
+      <div class="course-card">
+        <div class="course-banner">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="course-body">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+             <div class="course-category">Course ID: #${c.id}</div>
+             <div style="font-size: 0.7rem; background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 10px; font-weight: bold;">Enrolled</div>
+          </div>
+          
+          <h3 class="course-title">${c.title}</h3>
+          
+          <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.4;">
+            ${c.description || 'No description provided for this course.'}
+          </p>
+
+          <div class="course-meta">
+            <span><i class="fas fa-user-tie"></i> Trainer: <strong>${user.trainer || 'Assigning...'}</strong></span>
+          </div>
+          
+          <div style="font-size: 0.8rem; display:flex; justify-content:space-between; margin-top: 15px;">
+            <span>Completion</span>
+            <span>${progress}%</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: ${progress}%"></div>
+          </div>
+
+          <a href="student_videos.html?course=${encodeURIComponent(c.title)}" class="btn-enter">
+             Open Classroom <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 5px;"></i>
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+});
+  </script>
+</body>
+</html>

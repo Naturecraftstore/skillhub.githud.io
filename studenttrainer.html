@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Hub | Students</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --bg: #f4f7f6;
+    --white: #ffffff;
+    --danger: #e74c3c;
+    --dark-sidebar: #1a252f;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);
+}
+
+/* Layout */
+.app-container { display: flex; flex-direction: column; height: 100vh; }
+.top-nav { background: var(--primary); color: white; padding: 12px 20px; }
+.navbar { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+.logo img { width: 32px; height: 32px; border-radius: 50%; background: white; padding: 3px; }
+
+.main-content { display: flex; flex: 1; }
+.sidebar {
+    width: 240px;
+    background: var(--dark-sidebar);
+    color: white;
+}
+.sidebar a {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    color: #bdc3c7;
+    text-decoration: none;
+}
+.sidebar a.active,
+.sidebar a:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.content {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+th {
+    background: #f8f9fa;
+    text-align: left;
+}
+select {
+    padding: 6px;
+    border-radius: 4px;
+}
+.actions i {
+    cursor: pointer;
+    margin-right: 10px;
+}
+.fa-trash { color: var(--danger); }
+
+.btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+<!-- NAVBAR -->
+<header class="top-nav">
+    <div class="navbar">
+        <div class="logo">
+            <img src="image.png">
+            <span>Skill Hub</span>
+        </div>
+        <div>
+            <a href="admin_dashboard.html" style="color:white;margin-right:15px;">Home</a>
+            <a href="index.html" style="color:white;">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="main-content">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="students.html" class="active"><i class="fas fa-users"></i> Students</a>
+    <a href="trainers.html"><i class="fas fa-chalkboard-teacher"></i> Trainers</a>
+    <a href="courses.html"><i class="fas fa-book"></i> Courses</a>
+</aside>
+
+<!-- CONTENT -->
+<section class="content">
+
+<h2>Students Management</h2>
+
+<div class="card">
+<table>
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Course</th>
+    <th>Assigned Trainer</th>
+    <th>Actions</th>
+</tr>
+</thead>
+<tbody id="studentTable"></tbody>
+</table>
+</div>
+
+</section>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY = "skillhub_users";
+
+/* Load Students */
+function loadStudents() {
+    const users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    const students = users.filter(u => u.role === "student");
+    const trainers = users.filter(u => u.role === "trainer");
+
+    const tbody = document.getElementById("studentTable");
+    tbody.innerHTML = "";
+
+    students.forEach(s => {
+        const trainerOptions = trainers.map(t =>
+            `<option value="${t.trainer_id}" ${s.assigned_trainer === t.trainer_id ? "selected" : ""}>
+                ${t.name} (${t.trainer_id})
+            </option>`
+        ).join("");
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${s.name}</td>
+                <td>${s.email}</td>
+                <td>${s.course || "-"}</td>
+                <td>
+                    <select onchange="assignTrainer('${s.username}', this.value)">
+                        <option value="">Unassigned</option>
+                        ${trainerOptions}
+                    </select>
+                </td>
+                <td class="actions">
+                    <i class="fas fa-trash" onclick="deleteStudent('${s.username}')"></i>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+/* Assign Trainer */
+function assignTrainer(studentUsername, trainerId) {
+    const users = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const student = users.find(u => u.username === studentUsername);
+    student.assigned_trainer = trainerId;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
+
+/* Delete Student */
+function deleteStudent(username) {
+    if (!confirm("Delete this student?")) return;
+    let users = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    users = users.filter(u => u.username !== username);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+    loadStudents();
+}
+
+/* Initial Load */
+window.onload = loadStudents;
+</script>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Hub | Trainer Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --bg: #f4f7f6;
+    --white: #ffffff;
+    --dark: #1a252f;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);
+}
+
+/* Layout */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.top-nav {
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.logo img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: white;
+    padding: 3px;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background: var(--dark);
+    color: white;
+}
+
+.sidebar a {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    color: #bdc3c7;
+    text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #f8f9fa;
+    text-align: left;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+<!-- TOP NAV -->
+<header class="top-nav">
+    <div class="navbar">
+        <div class="logo">
+            <img src="image.png">
+            <span>Skill Hub | Trainer</span>
+        </div>
+        <div>
+            <span id="trainerName"></span>
+            &nbsp; | &nbsp;
+            <a href="index.html" style="color:white;">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="main-content">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <a href="trainer_dashboard.html" class="active">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+    <a href="#">
+        <i class="fas fa-users"></i> My Students
+    </a>
+    <a href="#">
+        <i class="fas fa-calendar"></i> Sessions
+    </a>
+    <a href="#">
+        <i class="fas fa-book"></i> Materials
+    </a>
+</aside>
+
+<!-- CONTENT -->
+<section class="content">
+
+<h2>Trainer Dashboard</h2>
+
+<!-- Trainer Info -->
+<div class="card">
+    <h3>My Profile</h3>
+    <p><b>Name:</b> <span id="profileName"></span></p>
+    <p><b>Email:</b> <span id="profileEmail"></span></p>
+    <p><b>Subjects:</b> <span id="profileSubjects"></span></p>
+</div>
+
+<!-- Assigned Students -->
+<div class="card">
+    <h3>Assigned Students</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+        <tbody id="studentTable"></tbody>
+    </table>
+</div>
+
+</section>
+</div>
+</div>
+
+<script>
+<!-- const STORAGE_KEY = "skillhub_users"; -->
+const LOGGED_KEY = "loggedUser";
+
+/* Role Protection */
+const loggedUser = JSON.parse(localStorage.getItem(LOGGED_KEY));
+if (!loggedUser || loggedUser.role !== "trainer") {
+    alert("Access denied");
+    window.location.href = "index.html";
+}
+
+/* Load Trainer Dashboard */
+function loadDashboard() {
+    const users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    const trainer = users.find(u => u.username === loggedUser.username);
+    if (!trainer) return;
+
+    document.getElementById("trainerName").innerText = trainer.name;
+    document.getElementById("profileName").innerText = trainer.name;
+    document.getElementById("profileEmail").innerText = trainer.email;
+    document.getElementById("profileSubjects").innerText =
+        trainer.subject1 + (trainer.subject2 ? ", " + trainer.subject2 : "");
+
+    const students = users.filter(u =>
+        u.role === "student" &&
+        u.assigned_trainer === trainer.trainer_id
+    );
+
+    const tbody = document.getElementById("studentTable");
+    tbody.innerHTML = "";
+
+    if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3">No students assigned</td></tr>`;
+        return;
+    }
+
+    students.forEach(s => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${s.name}</td>
+                <td>${s.email}</td>
+                <td>${s.course || "-"}</td>
+            </tr>
+        `;
+    });
+}
+
+/* Init */
+window.onload = loadDashboard;
+</script>
+
+</body>
+</html>
+

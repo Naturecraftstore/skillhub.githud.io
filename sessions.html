@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sessions | Skill Hub LMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --success: #22c55e;
+      --dark-sidebar: #1e293b;
+      --accent: #6366f1;
+    }
+
+    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Top Navigation */
+    .top-nav { background: var(--primary); color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 1000; }
+    .navbar { display: flex; justify-content: space-between; align-items: center; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+    .logo-icon { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: white; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .logo-text { font-size: 1.2rem; color: white; }
+    .top-nav-links a { color: white; text-decoration: none; margin-left: 18px; font-size: 0.9rem; }
+
+    /* Main Layout */
+    .main-content { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width: 240px; background: var(--dark-sidebar); color: white; flex-shrink: 0; }
+    .sidebar-nav .nav-item { display: flex; align-items: center; padding: 15px 20px; color: #bdc3c7; text-decoration: none; gap: 12px; }
+    .sidebar-nav .nav-item:hover, .sidebar-nav .nav-item.active { background: var(--accent); color: white; }
+
+    /* Content Area */
+    .content-area { flex: 1; padding: 2.5rem; overflow-y: auto; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+    /* Form Styles */
+    .form-card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .hidden { display: none; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 0.9rem; }
+
+    /* Table Styles */
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto; }
+    .dashboard-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; }
+    .dashboard-table th { padding: 12px; border-bottom: 2px solid var(--border); color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
+    .dashboard-table td { padding: 15px 12px; border-bottom: 1px solid var(--border); }
+
+    /* Buttons & Badges */
+    .btn-add { background: var(--primary); color: white; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .btn-join { color: var(--primary); text-decoration: none; font-weight: bold; }
+    .btn-delete { color: #ef4444; border: none; background: none; cursor: pointer; font-size: 1.1rem; }
+    .badge-course { background: #eef2ff; color: #4338ca; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; border: 1px solid #c7d2fe; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header class="top-nav">
+    <div class="navbar">
+      <div class="logo">
+        <div class="logo-icon"><a href="admin_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+        <span class="logo-text">Skill Hub</span>
+      </div>
+      <nav class="top-nav-links">
+        <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="messages.html"><i class="fas fa-comments"></i> Chat</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i></a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+        <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+        <a href="assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+        <a href="sessions.html" class="nav-item active"><i class="fas fa-calendar-plus"></i><span>Sessions</span></a>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <div class="page-header">
+        <h1>Live Sessions</h1>
+        <button class="btn-add" onclick="toggleCreateForm()"><i class="fas fa-plus"></i> Schedule Session</button>
+      </div>
+
+      <div id="createForm" class="form-card hidden">
+        <h3>Schedule New Session</h3>
+        <form id="sessionForm">
+          <div class="grid">
+            <input type="text" id="title" placeholder="Session Title" required>
+            <select id="targetCourse" required>
+                <option value="">-- Select Course --</option>
+            </select>
+            <input type="text" id="link" placeholder="Meeting Link (URL)" required>
+            <input type="date" id="date" required>
+            <input type="time" id="time" required>
+          </div>
+          <textarea id="description" placeholder="Short Description / Agenda" rows="2" style="margin-bottom:15px;"></textarea>
+          <div style="display:flex; gap:10px;">
+            <button type="submit" class="btn-add" style="background:var(--success);">Publish & Notify Students</button>
+            <button type="button" class="btn-add" style="background:#64748b;" onclick="toggleCreateForm()">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Title & Course</th>
+              <th>Description</th>
+              <th>Date & Time</th>
+              <th>Link</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sessionBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// Local Storage Keys
+const SESSION_KEY = 'skillhub_sessions';
+const COURSE_KEY = 'skillhub_courses';
+const USER_KEY = 'skillhub_users'; 
+const NOTIFY_KEY = 'lms_notifications';
+
+// 1. Function to Load Courses into the Dropdown
+function loadCourses() {
+    const data = localStorage.getItem(COURSE_KEY);
+    const courses = JSON.parse(data) || [];
+    const select = document.getElementById('targetCourse');
+    
+    // Reset dropdown
+    select.innerHTML = '<option value="">-- Select Course --</option>';
+
+    courses.forEach(course => {
+        const opt = document.createElement('option');
+        
+        // This handles cases where courses are objects (like {title: "Web Dev"}) or just strings
+        const courseName = (typeof course === 'object' && course !== null) 
+                    ? (course.title || course.name) 
+                    : course;
+        
+        if (courseName) {
+            opt.value = courseName;
+            opt.textContent = courseName;
+            select.appendChild(opt);
+        }
+    });
+
+    if (courses.length === 0) {
+        const opt = document.createElement('option');
+        opt.textContent = "No courses available";
+        opt.disabled = true;
+        select.appendChild(opt);
+    }
+}
+
+// 2. Function to Render the Sessions Table
+function renderSessions() {
+  const sessions = JSON.parse(localStorage.getItem(SESSION_KEY)) || [];
+  const tbody = document.getElementById('sessionBody');
+  
+  if (sessions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#64748b;">No live sessions scheduled.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = sessions.map(s => `
+    <tr>
+      <td>
+        <div style="font-weight:bold; margin-bottom:5px;">${s.title}</div>
+        <span class="badge-course">${s.course}</span>
+      </td>
+      <td style="font-size: 0.9rem;">${s.description || '-'}</td>
+      <td><i class="far fa-calendar-alt"></i> ${s.date}<br><i class="far fa-clock"></i> ${s.time}</td>
+      <td><a href="${s.link}" target="_blank" class="btn-join">Join Now</a></td>
+      <td>
+        <button class="btn-delete" onclick="deleteSession(${s.id})">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// 3. Handle Form Submission
+document.getElementById('sessionForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const course = document.getElementById('targetCourse').value;
+  const title = document.getElementById('title').value;
+  const date = document.getElementById('date').value;
+  const time = document.getElementById('time').value;
+
+  const newSession = {
+    id: Date.now(),
+    title: title,
+    course: course,
+    link: document.getElementById('link').value,
+    date: date,
+    time: time,
+    description: document.getElementById('description').value
+  };
+
+  // Save to LocalStorage
+  const sessions = JSON.parse(localStorage.getItem(SESSION_KEY)) || [];
+  sessions.push(newSession);
+  localStorage.setItem(SESSION_KEY, JSON.stringify(sessions));
+  
+  // Trigger Notifications for Students in that Course
+  sendNotifications(course, title, date, time);
+
+  // UI Updates
+  this.reset();
+  toggleCreateForm();
+  renderSessions();
+  alert(`Session scheduled and students in ${course} have been notified.`);
+});
+
+// 4. Notification Logic
+function sendNotifications(courseName, sessionTitle, date, time) {
+    const students = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    const notifications = JSON.parse(localStorage.getItem(NOTIFY_KEY)) || [];
+
+    // Filter students enrolled in the selected course
+    const targetStudents = students.filter(s => s.course === courseName);
+
+    targetStudents.forEach(student => {
+        notifications.push({
+            id: Date.now() + Math.random(),
+            studentEmail: student.username || student.email,
+            title: "New Live Session Scheduled",
+            message: `A new session "${sessionTitle}" for ${courseName} is scheduled for ${date} at ${time}.`,
+            date: new Date().toLocaleString(),
+            read: false
+        });
+    });
+
+    localStorage.setItem(NOTIFY_KEY, JSON.stringify(notifications));
+}
+
+// 5. Delete Session
+function deleteSession(id) {
+  if (confirm("Cancel this live session?")) {
+    let sessions = JSON.parse(localStorage.getItem(SESSION_KEY)) || [];
+    sessions = sessions.filter(s => s.id !== id);
+    localStorage.setItem(SESSION_KEY, JSON.stringify(sessions));
+    renderSessions();
+  }
+}
+
+// UI Toggle Helper
+function toggleCreateForm() {
+  document.getElementById('createForm').classList.toggle('hidden');
+}
+
+// Initializing the page
+window.onload = () => {
+    loadCourses();
+    renderSessions();
+};
+</script>
+
+</body>
+</html>

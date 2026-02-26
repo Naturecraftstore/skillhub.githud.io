@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Assignments | Skill Hub Student</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { 
+      --primary: #4f46e5; --bg: #f8fafc; --text: #1e293b; 
+      --white: #ffffff; --border: #e2e8f0; --warning: #f59e0b;
+      --success: #10b981; --accent: #818cf8;
+    }
+
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    
+    /* TOP NAV */
+    .top-nav {
+      position: fixed; top: 0; width: 100%; background: var(--primary);
+      padding: 0.7rem 2rem; z-index: 1000; display: flex;
+      justify-content: space-between; align-items: center; box-sizing: border-box; height: 65px;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 38px; height: 38px; border-radius: 8px; background: white; padding: 5px; }
+    .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .logo-text { color: #ffffff; font-size: 1.2rem; font-weight: 600; }
+
+    /* LAYOUT */
+    .app-container { display: flex; padding-top: 65px; }
+    .sidebar { 
+      width: 240px; height: calc(100vh - 65px); background: white; 
+      position: fixed; left: 0; border-right: 1px solid var(--border); 
+      padding: 1rem; box-sizing: border-box;
+    }
+    .nav-item { 
+      display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+      text-decoration: none; color: var(--text); border-radius: 8px; 
+      margin-bottom: 5px; transition: 0.3s;
+    }
+    .nav-item:hover { background: #f1f5f9; }
+    .nav-item.active { background: var(--primary); color: white; }
+
+    .content { margin-left: 240px; flex: 1; padding: 2.5rem; }
+
+    /* HEADERS */
+    .page-header { margin-bottom: 30px; }
+    .course-badge { 
+        background: #eef2ff; color: var(--primary); padding: 8px 16px; 
+        border-radius: 20px; font-size: 0.85rem; font-weight: 600; 
+        border: 1px solid #c7d2fe; display: inline-block; margin-bottom: 10px;
+    }
+
+    /* ASSIGNMENT CARDS */
+    .assignment-card {
+      background: white; padding: 25px; border-radius: 16px;
+      margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+      border: 1px solid var(--border); border-left: 6px solid var(--warning); 
+      display: flex; justify-content: space-between; align-items: center;
+      transition: transform 0.2s;
+    }
+    .assignment-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+    .assignment-card.is-submitted { border-left-color: var(--success); }
+
+    .as-info h3 { margin: 0 0 8px 0; color: var(--text); font-size: 1.2rem; }
+    .as-meta { display: flex; gap: 20px; font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
+    .as-meta i { color: var(--primary); margin-right: 5px; }
+
+    .btn { 
+      padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; 
+      display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; cursor: pointer; border: none;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-outline { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+    
+    .status-tag { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="logo">
+      <div class="logo-icon"><a href="student_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+      <span class="logo-text">Skill Hub <small style="font-weight: 400; opacity: 0.8;">| Student</small></span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <nav id="sidebarNav">
+        <a href="student_dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="student_courses.html" class="nav-item"><i class="fas fa-book"></i> My Courses</a>
+        <a href="student_materials.html" class="nav-item"><i class="fas fa-folder-open"></i> Materials</a>
+        <a href="student_videos.html" class="nav-item"><i class="fas fa-play-circle"></i> Video Lessons</a>
+        <a href="student_assignments.html" class="nav-item active"><i class="fas fa-tasks"></i> Assignments</a>
+        <a href="student_sessions.html" class="nav-item"><i class="fas fa-calendar-alt"></i> <span>Live Sessions</span></a>
+        <a href="student_results.html" class="nav-item"><i class="fas fa-poll-h"></i> My Results</a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="contact.html" class="nav-item"><i class="fas fa-envelope"></i> Contact Us</a>
+        <a href="notifications.html" class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="index.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="page-header">
+        <div id="courseTag" class="course-badge">Loading Course...</div>
+        <h1>My Assignments</h1>
+        <p style="color: #64748b; margin-top: -10px;">Review and submit your coursework.</p>
+      </div>
+
+      <div id="assignmentList">
+          </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Get Session & Student Data (Matching your Dashboard Logic)
+      const sessionUser = JSON.parse(localStorage.getItem('active_session'));
+      if (!sessionUser) { window.location.href = 'index.html'; return; }
+
+      // Get student details from skillhub_users (to get assigned course)
+      const allUsers = JSON.parse(localStorage.getItem('skillhub_users')) || [];
+      const currentUser = allUsers.find(u => u.username === sessionUser.username) || sessionUser;
+
+      // Update Course Tag UI
+      const myCourse = currentUser.course || 'General';
+      document.getElementById('courseTag').innerText = `Course: ${myCourse}`;
+
+      // 2. Fetch Assignments & Submissions (Using Keys from Trainer/Admin)
+      const allAssignments = JSON.parse(localStorage.getItem('skillhub_assignments')) || [];
+      const allSubmissions = JSON.parse(localStorage.getItem('lms_submissions')) || [];
+      
+      // Filter assignments for this specific student's course
+      const myCourseAssignments = allAssignments.filter(as => as.course === myCourse);
+      
+      const container = document.getElementById('assignmentList');
+
+      if (myCourseAssignments.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:50px; background:white; border-radius:16px; border:1px solid var(--border);">
+                <i class="fas fa-clipboard-list" style="font-size:3rem; color:#cbd5e1; margin-bottom:15px;"></i>
+                <p style="color:#64748b;">No assignments posted for the <b>${myCourse}</b> course yet.</p>
+            </div>`;
+        return;
+      }
+
+      container.innerHTML = myCourseAssignments.map(as => {
+        // Check if student submitted this (matching username/email logic)
+        const submission = allSubmissions.find(s => s.assignmentId === as.id && s.studentEmail === currentUser.username);
+        
+        return `
+          <div class="assignment-card ${submission ? 'is-submitted' : ''}">
+            <div class="as-info">
+              <div class="status-tag" style="color: ${submission ? 'var(--success)' : 'var(--warning)'}">
+                ${submission ? '<i class="fas fa-check-circle"></i> Submitted' : '<i class="fas fa-clock"></i> Pending'}
+              </div>
+              <h3>${as.title}</h3>
+              <div class="as-meta">
+                <span><i class="far fa-calendar-alt"></i> Due: <b>${as.due_date || as.dueDate}</b></span>
+                <span><i class="fas fa-user-tie"></i> Trainer: ${as.trainer || 'Assigned Trainer'}</span>
+              </div>
+              <p style="color:#475569; font-size:0.9rem; line-height:1.5; margin:0;">${as.description}</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              ${as.link ? `<a href="${as.link}" target="_blank" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> View Task</a>` : ''}
+              ${!submission ? 
+                `<a href="submit_assignment.html?id=${as.id}" class="btn btn-primary"><i class="fas fa-upload"></i> Submit Now</a>` : 
+                `<span style="color:var(--success); font-weight:700;"><i class="fas fa-check"></i> Submitted</span>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 3. Notification Badge Logic (Sync with Dashboard)
+      const allNotifications = JSON.parse(localStorage.getItem('lms_notifications')) || [];
+      const unread = allNotifications.filter(n => n.studentEmail === currentUser.username && !n.read).length;
+
+      if (unread > 0) {
+          const navItem = document.querySelector('a[href="notifications.html"]');
+          if (navItem) {
+              const badge = document.createElement('span');
+              badge.style.cssText = "background:#ef4444; color:white; border-radius:10px; padding:2px 8px; font-size:11px; margin-left:auto; font-weight:bold; display:inline-block;";
+              badge.innerText = unread;
+              navItem.appendChild(badge);
+          }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Edit Student | Skill Hub (Local Storage)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ============ CSS (Derived from edit_student.html) ============ */
+body { font-family: Arial, sans-serif; background:#f4f6f9; color: #333; margin: 0; padding: 20px; }
+.card { background:#fff; max-width:700px; margin:20px auto; padding:25px; border-radius:8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+h2, h3 { color: #4f46e5; margin-top: 0; }
+h3 { margin-top: 25px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom: 15px; }
+.form-group { margin-bottom: 15px; }
+label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #666; }
+input { padding:10px; width:100%; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+input:focus { border-color: #4f46e5; outline: none; }
+
+.actions { margin-top:30px; display:flex; gap:10px; border-top: 1px solid #eee; padding-top: 20px; }
+button { padding:10px 20px; cursor:pointer; border-radius: 4px; font-weight: bold; border: none; }
+.save { background:#4CAF50; color:#fff; }
+.save:hover { background: #45a049; }
+.cancel { background:#ccc; color: #333; text-decoration:none; display: inline-block; padding:10px 20px; text-align: center; }
+.cancel:hover { background: #bbb; }
+
+hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+.alert { padding: 10px; background: #dcfce7; color: #166534; border-radius: 4px; margin-bottom: 15px; display: none; }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Edit Student Profile</h2>
+    <div id="successMsg" class="alert">Changes saved successfully to Local Storage!</div>
+    
+    <form id="editStudentForm">
+        <input type="hidden" name="id" id="edit_id">
+
+        <h3>Basic Information</h3>
+        <div class="grid">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input name="name" id="edit_name" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" id="edit_email" required>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input name="phone" id="edit_phone">
+            </div>
+            <div class="form-group">
+                <label>Enrolled Course</label>
+                <input name="course" id="edit_course">
+            </div>
+        </div>
+
+        <h3>Educational Background</h3>
+        <div class="grid">
+            <input name="edu_10_school" id="e10c" placeholder="10th School">
+            <input name="edu_10_start" id="e10s" placeholder="Start Year">
+            <input name="edu_10_end" id="e10e" placeholder="End Year">
+            <input name="edu_10_pct" id="e10p" placeholder="Percentage/GPA">
+        </div>
+
+        <div class="grid">
+            <input name="edu_inter_college" id="eic" placeholder="Inter College">
+            <input name="edu_inter_start" id="eis" placeholder="Start Year">
+            <input name="edu_inter_end" id="eie" placeholder="End Year">
+            <input name="edu_inter_pct" id="eip" placeholder="Percentage/GPA">
+        </div>
+
+        <div class="grid">
+            <input name="edu_ug_college" id="euc" placeholder="UG College">
+            <input name="edu_ug_start" id="eus" placeholder="Start Year">
+            <input name="edu_ug_end" id="eue" placeholder="End Year">
+            <input name="edu_ug_pct" id="eup" placeholder="Percentage/GPA">
+        </div>
+
+        <div class="grid">
+            <input name="edu_pg_college" id="epc" placeholder="PG College">
+            <input name="edu_pg_start" id="eps" placeholder="Start Year">
+            <input name="edu_pg_end" id="epe" placeholder="End Year">
+            <input name="edu_pg_pct" id="epp" placeholder="Percentage/GPA">
+        </div>
+
+        <h3>Security</h3>
+        <div class="form-group">
+            <label>Change Password</label>
+            <input type="password" name="password" id="edit_password"
+             placeholder="New password (leave blank to keep current)">
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="save">Update Profile</button>
+            <a href="#" class="cancel" onclick="window.history.back()">
+                <i class="fa fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+/* ============ JS & LOCAL STORAGE LOGIC ============ */
+
+// 1. Storage Key
+const STORAGE_KEY = 'skillhub_current_student';
+
+// 2. Mock Data (If LocalStorage is empty, use this)
+const defaultStudent = {
+    id: "STU123",
+    name: "Alex Johnson",
+    email: "alex.j@example.com",
+    phone: "555-0199",
+    course: "Full Stack Web Development",
+    education: {
+        "10th": { college: "North High", start: "2016", end: "2018", pct: "92%" },
+        "inter": { college: "City Junior College", start: "2018", end: "2020", pct: "88%" },
+        "ug": { college: "State University", start: "2020", end: "2024", pct: "3.8 GPA" },
+        "pg": { college: "", start: "", end: "", pct: "" }
+    }
+};
+
+// 3. Load Data into Form
+function loadStudentData() {
+    let data = localStorage.getItem(STORAGE_KEY);
+    const student = data ? JSON.parse(data) : defaultStudent;
+
+    // Basic Info
+    document.getElementById("edit_id").value = student.id;
+    document.getElementById("edit_name").value = student.name;
+    document.getElementById("edit_email").value = student.email;
+    document.getElementById("edit_phone").value = student.phone || "";
+    document.getElementById("edit_course").value = student.course || "";
+
+    // Education
+    const e = student.education || {};
+    
+    // 10th
+    document.getElementById("e10c").value = e["10th"]?.college || "";
+    document.getElementById("e10s").value = e["10th"]?.start || "";
+    document.getElementById("e10e").value = e["10th"]?.end || "";
+    document.getElementById("e10p").value = e["10th"]?.pct || "";
+
+    // Inter
+    document.getElementById("eic").value  = e["inter"]?.college || "";
+    document.getElementById("eis").value  = e["inter"]?.start || "";
+    document.getElementById("eie").value  = e["inter"]?.end || "";
+    document.getElementById("eip").value  = e["inter"]?.pct || "";
+
+    // UG
+    document.getElementById("euc").value  = e["ug"]?.college || "";
+    document.getElementById("eus").value  = e["ug"]?.start || "";
+    document.getElementById("eue").value  = e["ug"]?.end || "";
+    document.getElementById("eup").value  = e["ug"]?.pct || "";
+
+    // PG
+    document.getElementById("epc").value  = e["pg"]?.college || "";
+    document.getElementById("eps").value  = e["pg"]?.start || "";
+    document.getElementById("epe").value  = e["pg"]?.end || "";
+    document.getElementById("epp").value  = e["pg"]?.pct || "";
+}
+
+// 4. Handle Form Submission (Save to Local Storage)
+document.getElementById('editStudentForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const updatedStudent = {
+        id: document.getElementById("edit_id").value,
+        name: document.getElementById("edit_name").value,
+        email: document.getElementById("edit_email").value,
+        phone: document.getElementById("edit_phone").value,
+        course: document.getElementById("edit_course").value,
+        education: {
+            "10th": {
+                college: document.getElementById("e10c").value,
+                start: document.getElementById("e10s").value,
+                end: document.getElementById("e10e").value,
+                pct: document.getElementById("e10p").value
+            },
+            "inter": {
+                college: document.getElementById("eic").value,
+                start: document.getElementById("eis").value,
+                end: document.getElementById("eie").value,
+                pct: document.getElementById("eip").value
+            },
+            "ug": {
+                college: document.getElementById("euc").value,
+                start: document.getElementById("eus").value,
+                end: document.getElementById("eue").value,
+                pct: document.getElementById("eup").value
+            },
+            "pg": {
+                college: document.getElementById("epc").value,
+                start: document.getElementById("eps").value,
+                end: document.getElementById("epe").value,
+                pct: document.getElementById("epp").value
+            }
+        }
+    };
+
+    // Persist to Local Storage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedStudent));
+
+    // Show Success Message
+    const alert = document.getElementById('successMsg');
+    alert.style.display = 'block';
+    setTimeout(() => alert.style.display = 'none', 3000);
+});
+
+// Initialize on page load
+window.onload = loadStudentData;
+
+</script>
+
+</body>
+</html>

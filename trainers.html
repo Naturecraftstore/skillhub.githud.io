@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Hub | Trainers Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --dark-sidebar: #1a252f;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
+
+        /* Navigation & Sidebar */
+        .top-nav { background: var(--primary); color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 1000; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .logo-icon { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: white; }
+        .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .logo-text { font-size: 1.2rem; color: white; }
+        .top-nav-links a { color: white; text-decoration: none; margin-left: 18px; font-size: 0.9rem; }
+
+        .app-container { display: flex; flex-direction: column; height: 100vh; }
+        .main-content { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 240px; background: var(--dark-sidebar); color: white; flex-shrink: 0; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; padding: 15px 20px; color: #bdc3c7; text-decoration: none; gap: 12px; }
+        .sidebar-nav .nav-item:hover, .sidebar-nav .nav-item.active { background: var(--accent); color: white; }
+
+        .content { flex: 1; padding: 25px; overflow-y: auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+
+        /* Table & Forms */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; }
+        input[readonly] { background: #eee; }
+
+        .dashboard-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .dashboard-table th, .dashboard-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .dashboard-table th { background: #f8f9fa; color: var(--primary); }
+
+        .actions { display: flex; gap: 8px; }
+        .actions button { border: none; background: none; cursor: pointer; font-size: 1.1rem; }
+        .fa-trash { color: var(--danger); }
+        .fa-edit { color: var(--accent); }
+
+        .btn-add { background: var(--accent); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { background: #95a5a6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+
+        /* Password Wrapper for Eye Icon */
+        .pass-wrapper { position: relative; width: 100%; }
+        .pass-wrapper i { position: absolute; right: 10px; top: 35px; cursor: pointer; color: #7f8c8d; z-index: 10; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+        .slide-hidden { display: none; }
+        .student-badge { cursor: pointer; transition: 0.3s; }
+        .student-badge:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+        .unassign-btn { color: var(--danger); border: none; background: none; cursor: pointer; padding: 5px; border-radius: 4px; }
+        .unassign-btn:hover { background: #fee2e2; }
+    </style>
+</head>
+
+<body>
+
+<div class="app-container">
+    <header class="top-nav">
+        <div class="navbar">
+            <div class="logo">
+                <div class="logo-icon"><a href="admin_dashboard.html"><img src="image.png" alt="Logo"></a></div>
+                <span class="logo-text">Skill Hub</span>
+            </div>
+            <div class="top-nav-links">
+                <a href="admin_dashboard.html"><i class="fas fa-home"></i> Home</a>
+        <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="messages.html" ><i class="fas fa-comments"></i> User Chat</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i></a>
+        <a href="setting.html"><i class="fas fa-cog"></i> Settings</a></a>
+        <a href="admin_profile.html">profile</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="admin_dashboard.html" class="nav-item active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+      <a href="students.html" class="nav-item"><i class="fas fa-users"></i><span>Students</span></a>
+      <a href="trainers.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Trainers</span></a>
+      <a href="courses.html" class="nav-item"><i class="fas fa-book"></i><span>Courses</span></a>
+      <a href="materials.html" class="nav-item"><i class="fas fa-book-open"></i><span>Materials</span></a>
+      <a href="videos.html" class="nav-item"><i class="fas fa-video"></i><span>Videos</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+      <a href="sessions.html" class="nav-item"><i class="fas fa-calendar-plus"></i><span>Sessions</span></a>
+      </nav>
+        </aside>
+
+        <section class="content">
+            <h1>Trainers Management</h1>
+            <button class="btn-add" onclick="toggleAdd()">+ Add Trainer</button>
+
+            <div style="margin:15px 0;">
+                <input type="text" id="searchTrainer" placeholder="Search by name, ID, or course...">
+            </div>
+
+            <div class="card slide-hidden" id="addCard">
+                <h3>Register New Trainer</h3>
+                <form id="trainerForm" class="form-grid">
+                    <input id="name" placeholder="Full Name" required>
+                    <input id="email" placeholder="Email">
+                    <input id="phone" placeholder="Phone">
+                    <input id="exp" placeholder="Experience (Years)">
+                    <select id="course" required><option value="">Select Primary Course</option></select>
+                    <select id="course2"><option value="">Select Secondary Course (Optional)</option></select>
+                    <input id="trainer_id" placeholder="Trainer ID" readonly>
+                    <input id="username" placeholder="Username" readonly>
+                    
+                    <div class="pass-wrapper">
+                        <label style="font-size: 0.75rem;">Password</label>
+                        <input type="password" id="pass" placeholder="Create Password" required>
+                        <i class="fas fa-eye" onclick="togglePasswordVisibility('pass', this)"></i>
+                    </div>
+
+                    <div style="grid-column:1/-1; margin-top: 10px;">
+                        <button type="button" class="btn-add" onclick="saveTrainer()">Create</button>
+                        <button type="button" class="btn-cancel" onclick="toggleAdd()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <table class="dashboard-table" id="trainerTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Experience</th>
+                            <th>Specialization</th>
+                            <th>Email</th>
+                            <th>Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h3>Edit Trainer Profile</h3>
+        <input type="hidden" id="edit_username">
+        <div class="form-grid">
+            <div><label style="font-size: 0.75rem;">Full Name</label><input id="edit_name"></div>
+            <div><label style="font-size: 0.75rem;">Email</label><input id="edit_email"></div>
+            <div><label style="font-size: 0.75rem;">Phone</label><input id="edit_phone"></div>
+            <div><label style="font-size: 0.75rem;">Primary Course</label><select id="edit_course"></select></div>
+            <div><label style="font-size: 0.75rem;">Secondary Course</label><select id="edit_course2"></select></div>
+            
+            <div class="pass-wrapper">
+                <label style="font-size: 0.75rem; color: var(--danger); font-weight: bold;">Update Password</label>
+                <input type="password" id="edit_pass" placeholder="Enter new password">
+                <i class="fas fa-eye" onclick="togglePasswordVisibility('edit_pass', this)"></i>
+            </div>
+        </div>
+        <br>
+        <button class="btn-add" onclick="updateTrainer()">Update Trainer</button>
+        <button class="btn-cancel" onclick="closeEdit()">Cancel</button>
+    </div>
+</div>
+
+<div class="modal" id="viewStudentsModal">
+    <div class="modal-content" style="max-width: 450px;">
+        <h3 id="modalTrainerName">Trainer's Roster</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee;">
+            <label style="font-size: 0.85rem; font-weight: bold; color: var(--primary);">Quick Assign Student:</label>
+            <input type="text" id="modalStudentSearch" placeholder="Type name to filter list..." 
+                   style="margin: 8px 0; padding: 8px; width: 100%;" oninput="filterUnassignedStudents()">
+            <div style="display: flex; gap: 8px;">
+                <select id="unassignedStudentsList" style="flex: 1;"></select>
+                <button class="btn-add" style="padding: 0 15px;" onclick="assignStudentToTrainer()">Assign</button>
+            </div>
+        </div>
+        <ul id="studentList" style="list-style: none; padding: 0; max-height: 250px; overflow-y: auto; border-top: 1px solid #eee;"></ul>
+        <br>
+        <button class="btn-cancel" style="width: 100%;" onclick="document.getElementById('viewStudentsModal').style.display='none'">Close</button>
+    </div>
+</div>
+
+<script>
+const USER_KEY = 'skillhub_users';
+const COURSE_KEY = 'skillhub_courses';
+let currentTrainerForAssignment = "";
+
+// NEW: Toggle visibility function
+function togglePasswordVisibility(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+    }
+}
+
+function toggleAdd(){
+    const c = document.getElementById("addCard");
+    c.classList.toggle("slide-hidden");
+    if(!c.classList.contains("slide-hidden")){
+        document.getElementById("trainer_id").value = "TRN"+Math.floor(1000+Math.random()*9000);
+        syncCourseDropdowns();
+    }
+}
+
+document.getElementById("name").addEventListener("input", function () {
+    const cleanName = this.value.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, "");
+    document.getElementById("username").value = cleanName ? "trn_" + cleanName : "";
+});
+
+function syncCourseDropdowns() {
+    const courses = JSON.parse(localStorage.getItem(COURSE_KEY)) || [];
+    const selects = [
+        document.getElementById("course"), document.getElementById("course2"),
+        document.getElementById("edit_course"), document.getElementById("edit_course2")
+    ];
+    
+    selects.forEach(sel => {
+        if(!sel) return;
+        const current = sel.value;
+        const isSec = sel.id.includes('2');
+        sel.innerHTML = `<option value="">${isSec ? 'No Second Course' : 'Select Primary Course'}</option>`;
+        courses.forEach(c => {
+            let opt = document.createElement("option");
+            opt.value = c; opt.textContent = c;
+            sel.appendChild(opt);
+        });
+        sel.value = current;
+    });
+}
+
+function loadTrainers(){
+    const users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    const tb = document.querySelector("#trainerTable tbody");
+    tb.innerHTML = "";
+    
+    const f = document.getElementById("searchTrainer").value.toLowerCase();
+    const allStudents = users.filter(u => u.role === 'student');
+
+    users.filter(u => u.role === 'trainer').filter(t => 
+        t.name.toLowerCase().includes(f) || (t.course && t.course.toLowerCase().includes(f))
+    ).forEach(t => {
+        const assigned = allStudents.filter(s => s.trainer && s.trainer.trim() === t.name.trim());
+        const count = assigned.length;
+        const badgeColor = count > 0 ? 'var(--success)' : '#95a5a6';
+
+        tb.innerHTML += `
+        <tr>
+            <td><b>${t.trainer_id}</b></td>
+            <td>${t.name}</td>
+            <td>${t.experience || 0} Yrs</td>
+            <td>
+                <div style="line-height:1.2">
+                    <span style="color:var(--accent); font-weight:600;">${t.course}</span><br>
+                    <small style="color:#7f8c8d;">${t.course2 || '---'}</small>
+                </div>
+            </td>
+            <td>${t.email || 'N/A'}</td>
+            <td>
+                <span class="student-badge" style="background:${badgeColor}; color:white; padding:4px 12px; border-radius:12px; font-size:0.75rem; font-weight:bold;" onclick="viewAssignedStudents('${t.name}')">
+                    ${count} Active <i class="fas fa-users-cog" style="margin-left:5px"></i>
+                </span>
+            </td>
+            <td class="actions">
+                <button onclick="openEdit('${t.username}')"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteTrainer('${t.username}', '${t.name}')"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>`;
+    });
+}
+
+function viewAssignedStudents(trainerName) {
+    currentTrainerForAssignment = trainerName;
+    document.getElementById("modalStudentSearch").value = ""; 
+    const users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    const assigned = users.filter(u => u.role === 'student' && u.trainer && u.trainer.trim() === trainerName.trim());
+    const list = document.getElementById("studentList");
+    document.getElementById("modalTrainerName").innerText = `Manage: ${trainerName}`;
+    list.innerHTML = "";
+    if (assigned.length === 0) {
+        list.innerHTML = "<li style='padding:20px; color:#888; text-align:center;'>No students assigned yet.</li>";
+    } else {
+        assigned.forEach(s => {
+            list.innerHTML += `
+                <li style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                    <span><strong>${s.name}</strong> <br><small style="color:#7f8c8d;">${s.course}</small></span>
+                    <button class="unassign-btn" onclick="unassignStudent('${s.username}')" title="Remove student">
+                        <i class="fas fa-user-minus"></i>
+                    </button>
+                </li>`;
+        });
+    }
+    filterUnassignedStudents();
+    document.getElementById("viewStudentsModal").style.display = "flex";
+}
+
+function filterUnassignedStudents() {
+    const search = document.getElementById("modalStudentSearch").value.toLowerCase();
+    const users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    const drop = document.getElementById("unassignedStudentsList");
+    const unassigned = users.filter(u => 
+        u.role === 'student' && (!u.trainer || u.trainer === "") &&
+        u.name.toLowerCase().includes(search)
+    );
+    drop.innerHTML = '<option value="">-- Select Student --</option>';
+    unassigned.forEach(s => {
+        drop.innerHTML += `<option value="${s.username}">${s.name} (${s.course})</option>`;
+    });
+}
+
+function assignStudentToTrainer() {
+    const sUname = document.getElementById("unassignedStudentsList").value;
+    if (!sUname) return alert("Select a student first");
+    let users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    const idx = users.findIndex(u => u.username === sUname);
+    if (idx !== -1) {
+        users[idx].trainer = currentTrainerForAssignment;
+        localStorage.setItem(USER_KEY, JSON.stringify(users));
+        viewAssignedStudents(currentTrainerForAssignment);
+        loadTrainers();
+    }
+}
+
+function unassignStudent(sUname) {
+    if(!confirm("Remove student from this trainer?")) return;
+    let users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    const idx = users.findIndex(u => u.username === sUname);
+    if (idx !== -1) {
+        users[idx].trainer = "";
+        localStorage.setItem(USER_KEY, JSON.stringify(users));
+        viewAssignedStudents(currentTrainerForAssignment);
+        loadTrainers();
+    }
+}
+
+function saveTrainer(){
+    const name = document.getElementById("name").value.trim();
+    const c1 = document.getElementById("course").value;
+    const pass = document.getElementById("pass").value;
+    if(!name || !c1 || !pass) return alert("Fill required fields");
+    let users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+    const uname = document.getElementById("username").value;
+    if(users.some(u => u.username === uname)) return alert("Username exists!");
+    users.push({
+        name: name, email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value, experience: document.getElementById("exp").value,
+        course: c1, course2: document.getElementById("course2").value,
+        trainer_id: document.getElementById("trainer_id").value,
+        username: uname, password: pass, role: 'trainer'
+    });
+    localStorage.setItem(USER_KEY, JSON.stringify(users));
+    document.getElementById("trainerForm").reset();
+    toggleAdd();
+    loadTrainers();
+}
+
+function deleteTrainer(uname, tName){
+    if(confirm(`Delete ${tName}?`)){
+        let users = JSON.parse(localStorage.getItem(USER_KEY)) || [];
+        localStorage.setItem(USER_KEY, JSON.stringify(users.filter(x => x.username !== uname)));
+        loadTrainers();
+    }
+}
+
+function openEdit(u){
+    const users = JSON.parse(localStorage.getItem(USER_KEY));
+    const t = users.find(x => x.username === u);
+    syncCourseDropdowns();
+    document.getElementById("edit_username").value = u;
+    document.getElementById("edit_name").value = t.name;
+    document.getElementById("edit_email").value = t.email;
+    document.getElementById("edit_phone").value = t.phone;
+    document.getElementById("edit_course").value = t.course;
+    document.getElementById("edit_course2").value = t.course2 || "";
+    document.getElementById("edit_pass").value = t.password; 
+    document.getElementById("edit_pass").type = "password"; // Reset to masked
+    document.getElementById("editModal").style.display = "flex";
+}
+
+function updateTrainer(){
+    let users = JSON.parse(localStorage.getItem(USER_KEY));
+    const uname = document.getElementById("edit_username").value;
+    const i = users.findIndex(x => x.username === uname);
+    const oldName = users[i].name;
+    const newName = document.getElementById("edit_name").value.trim();
+    const newPass = document.getElementById("edit_pass").value;
+
+    if(!newName || !newPass) return alert("Name and Password cannot be empty!");
+
+    users[i].name = newName;
+    users[i].email = document.getElementById("edit_email").value;
+    users[i].phone = document.getElementById("edit_phone").value;
+    users[i].course = document.getElementById("edit_course").value;
+    users[i].course2 = document.getElementById("edit_course2").value;
+    users[i].password = newPass;
+
+    if(oldName !== newName) {
+        users.forEach(u => { if(u.role === 'student' && u.trainer === oldName) u.trainer = newName; });
+    }
+    localStorage.setItem(USER_KEY, JSON.stringify(users));
+    closeEdit();
+    loadTrainers();
+}
+
+function closeEdit(){ document.getElementById("editModal").style.display="none"; }
+document.getElementById("searchTrainer").addEventListener("input", loadTrainers);
+window.onload = () => { syncCourseDropdowns(); loadTrainers(); };
+</script>
+</body>
+</html>

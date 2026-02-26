@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | Skill Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+    :root { 
+        --primary: #4f46e5; 
+        --text: #1e293b; 
+        --white: #65a8e7; 
+        --border: rgba(226, 232, 240, 0.5); /* Softened for glass effect */
+        --unread: rgba(145, 184, 235, 0.7);
+    }
+
+    body { 
+        font-family: 'Segoe UI', sans-serif; 
+        margin: 0; 
+        /* SETTING YOUR LOCAL IMAGE */
+        background-image: url('image.png');
+        background-size: 90%;
+        background-position: center;
+        background-attachment: fixed;
+        color: var(--text);
+        min-height: 100vh;
+    }
+    
+    .top-nav {
+        position: fixed; top: 0; width: 100%; 
+        background: rgba(79, 70, 229, 0.9); /* Translucent primary */
+        backdrop-filter: blur(10px);
+        padding: 0.7rem 2rem; z-index: 1000; display: flex;
+        justify-content: space-between; align-items: center; box-sizing: border-box;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .logo-text { color: white; font-size: 1.2rem; font-weight: 600; text-decoration: none; }
+
+    .container { max-width: 800px; margin: 90px auto 40px; padding: 0 20px; }
+    
+    .header-actions { 
+        display: flex; justify-content: space-between; align-items: center; 
+        margin-bottom: 20px; 
+        color: white; /* Changed to white for visibility on background */
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    #unreadBadge { background: #ef4444; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.9rem; margin-left: 10px; display: none; }
+    
+    .btn-clear { 
+        background: rgba(255, 255, 255, 0.2); 
+        color: rgb(15, 15, 15);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.4); 
+        padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; 
+    }
+    .btn-clear:hover { background: #fee2e2; color: #dc2626; border-color: #fee2e2; }
+
+    /* Glass Effect Notification Card */
+    .notification-card { 
+        background: rgba(255, 255, 255, 0.85); 
+        backdrop-filter: blur(15px);
+        border-radius: 12px; 
+        border: 1px solid var(--border); 
+        overflow: hidden; 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    .note-item { 
+        padding: 20px; border-bottom: 1px solid var(--border); 
+        display: flex; gap: 15px; transition: 0.2s; position: relative;
+    }
+    .note-item.unread { 
+        background: var(--unread); 
+        border-left: 5px solid var(--primary); 
+    }
+    .note-item:last-child { border-bottom: none; }
+    .note-item:hover { background: rgba(255, 255, 255, 0.95); }
+
+    .note-icon { 
+        width: 40px; height: 40px; border-radius: 50%; 
+        background: var(--primary); 
+        color: white; 
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .note-content { flex: 1; }
+    .note-title { font-weight: 700; margin-bottom: 4px; display: flex; justify-content: space-between; color: var(--primary); }
+    .note-time { font-size: 0.75rem; color: #64748b; font-weight: 400; }
+    .note-msg { font-size: 0.95rem; color: #1e293b; line-height: 1.5; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #475569; }
+    .empty-state i { font-size: 4rem; margin-bottom: 15px; opacity: 0.5; color: var(--primary); }
+
+    .back-link { color: white; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+</style>
+</head>
+<body>
+
+<header class="top-nav">
+    <a href="#" id="backBtn" class="back-link"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    <div class="logo-text">Notifications Center</div>
+    <div style="width: 100px;"></div>
+</header>
+
+<div class="container">
+    <div class="header-actions">
+        <h2>Your Alerts <span id="unreadBadge">0</span></h2>
+        <button class="btn-clear" onclick="clearAll()">Clear All</button>
+    </div>
+
+    <div class="notification-card" id="notificationsWrapper"></div>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem('active_session'));
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!user) { window.location.href = 'index.html'; return; }
+        document.getElementById('backBtn').href = user.role + '_dashboard.html';
+        renderNotifications();
+    });
+
+    function renderNotifications() {
+        const allNotes = JSON.parse(localStorage.getItem('lms_notifications')) || [];
+        const wrapper = document.getElementById('notificationsWrapper');
+        const badge = document.getElementById('unreadBadge');
+        
+        const myNotes = allNotes.filter(n => n.studentEmail === user.username).reverse();
+        
+        // Calculate Unread Count
+        const unreadCount = myNotes.filter(n => n.read === false).length;
+        if (unreadCount > 0) {
+            badge.innerText = unreadCount;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+
+        if (myNotes.length === 0) {
+            wrapper.innerHTML = `<div class="empty-state"><i class="fas fa-bell-slash"></i><p>No notifications yet.</p></div>`;
+            return;
+        }
+
+        wrapper.innerHTML = myNotes.map(n => `
+            <div class="note-item ${n.read ? '' : 'unread'}">
+                <div class="note-icon">
+                    <i class="fas ${n.title.includes('Grade') ? 'fa-graduation-cap' : 'fa-info-circle'}"></i>
+                </div>
+                <div class="note-content">
+                    <div class="note-title">
+                        ${n.title}
+                        <span class="note-time">${n.date}</span>
+                    </div>
+                    <div class="note-msg">${n.message}</div>
+                </div>
+            </div>
+        `).join('');
+
+        // Mark all as read after 2 seconds
+        setTimeout(markAllAsRead, 2000);
+    }
+
+    function markAllAsRead() {
+        let allNotes = JSON.parse(localStorage.getItem('lms_notifications')) || [];
+        let updated = false;
+        allNotes.forEach(n => {
+            if(n.studentEmail === user.username && !n.read) {
+                n.read = true;
+                updated = true;
+            }
+        });
+        if(updated) localStorage.setItem('lms_notifications', JSON.stringify(allNotes));
+    }
+
+    function clearAll() {
+        if(!confirm("Delete all notifications?")) return;
+        let allNotes = JSON.parse(localStorage.getItem('lms_notifications')) || [];
+        const filtered = allNotes.filter(n => n.studentEmail !== user.username);
+        localStorage.setItem('lms_notifications', JSON.stringify(filtered));
+        renderNotifications();
+    }
+</script>
+</body>
+</html>
